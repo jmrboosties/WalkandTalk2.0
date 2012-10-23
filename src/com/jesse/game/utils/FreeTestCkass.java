@@ -1,5 +1,6 @@
 package com.jesse.game.utils;
 
+import java.awt.List;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -8,11 +9,11 @@ import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
 
-import jesse.com.game.server.Constants.State;
-import jesse.com.game.server.GameState;
-import jesse.com.game.server.PlayerHolder;
 
 import com.jesse.game.objects.Vector2i;
+import com.jesse.game.server.GameState;
+import com.jesse.game.server.PlayerHolder;
+import com.jesse.game.server.Constants.State;
 
 public class FreeTestCkass {
 
@@ -53,10 +54,10 @@ public class FreeTestCkass {
 		boolean sending = true;
 		GameState state;
 		Print.log("entering the while, wish me luck men");
-		while((state = (GameState) objectIn.readObject()) != null) {
-//			
+		while(sending) {
+//			(state = (GameState) objectIn.readObject()) != null
 //			if(state != null) {
-				Print.log(state.toString());
+//				Print.log(state.toString());
 //			}
 //			Print.log("Server says: " + serverOutput);
 //			

@@ -29,6 +29,7 @@ public class TiledMapUsable extends TiledMap {
 		super(ref, location);
 	}
 
+	@SuppressWarnings("unchecked")
 	public ArrayList<Layer> getLayers() {
 		return layers;
 	}

@@ -5,10 +5,10 @@ import org.lwjgl.opengl.DisplayMode;
 
 public class DisplayExample {
 
-	private MouseHandler mMouseHandler;
+//	private MouseHandler mMouseHandler;
 	
 	public void start() {
-		mMouseHandler = new MouseHandler();
+//		mMouseHandler = new MouseHandler();
 		
 		
 		try {

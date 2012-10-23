@@ -7,12 +7,10 @@ import org.newdawn.slick.AppGameContainer;
 import org.newdawn.slick.BasicGame;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
-import org.newdawn.slick.Music;
 import org.newdawn.slick.SlickException;
-import org.newdawn.slick.geom.Vector2f;
 import org.newdawn.slick.tiled.Layer;
 
-import com.jesse.game.drawable.objects.Player;
+import com.jesse.game.drawables.Player;
 import com.jesse.game.objects.Vector2i;
 import com.jesse.game.tiled.TiledMapUsable;
 
@@ -21,7 +19,7 @@ public class MyNerdoGame extends BasicGame {
 	private TiledMapUsable mMap;
 	private Layer mCollisionLayer;
 	private Player mPlayer;
-	private Music mMusic;
+//	private Music mMusic;
 	public static Set<Vector2i> mCollisionTiles;
 	
 	public static final int SCREN_WIDTH = 1024;
