@@ -1,6 +1,5 @@
 package com.jesse.game.utils;
 
-import java.awt.List;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -9,23 +8,17 @@ import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
 
-
+import com.jesse.game.data.Command;
+import com.jesse.game.data.MoveCommand;
+import com.jesse.game.data.PlayerHolder;
 import com.jesse.game.objects.Vector2i;
-import com.jesse.game.server.GameState;
-import com.jesse.game.server.PlayerHolder;
-import com.jesse.game.server.Constants.State;
+import com.jesse.game.utils.Constants.Direction;
+import com.jesse.game.utils.Constants.State;
 
 public class FreeTestCkass {
 
 	public static void main(String[] args) throws IOException, ClassNotFoundException {
 		testMovement();
-	}
-	
-	public static State gay() {
-		State state = State.IDLE;
-		State newState = state;
-		newState = State.RUN;
-		return state;
 	}
 	
 	private static void testMovement() throws IOException, ClassNotFoundException {
@@ -51,8 +44,8 @@ public class FreeTestCkass {
 //		String serverOutput;
 //		Vector2i position = new Vector2i(5, 5);
 		PlayerHolder holder = new PlayerHolder(0, new Vector2i(), "jesse");
+		Command command;
 		boolean sending = true;
-		GameState state;
 		Print.log("entering the while, wish me luck men");
 		while(sending) {
 //			(state = (GameState) objectIn.readObject()) != null
@@ -65,9 +58,10 @@ public class FreeTestCkass {
 //				break;
 
 //			holder = calculatePosition(holder, reader);
-			holder = takeInput(holder, reader);
-			Print.log("sending over: " + holder.toString());
-			objectOut.writeObject(holder);
+			command = takeInput(holder, reader);
+			Print.log("sending over: " + command.toString());
+			Print.log("the gson value: " + command.getGson());
+			objectOut.writeObject(command);
 			objectOut.reset();
 		}
 		
@@ -93,19 +87,23 @@ public class FreeTestCkass {
 		return position;
 	}
 	
-	private static PlayerHolder takeInput(PlayerHolder holder, BufferedReader reader) throws IOException {
-				
+	private static MoveCommand takeInput(PlayerHolder holder, BufferedReader reader) throws IOException {
+		Direction direction = null;
 		String entry = reader.readLine().substring(0, 1);
 		if(entry.equals("w"))
-			holder.coordinates.y++;
+//			holder.coordinates.y++;
+			direction = Direction.UP;
 		else if(entry.equals("s"))
-			holder.coordinates.y--;
+//			holder.coordinates.y--;
+			direction = Direction.DOWN;
 		else if(entry.equals("a"))
-			holder.coordinates.x--;
+//			holder.coordinates.x--;
+			direction = Direction.LEFT;
 		else if(entry.equals("d"))
-			holder.coordinates.x++;
+//			holder.coordinates.x++;
+			direction = Direction.RIGHT;
 		
-		return holder;
+		return new MoveCommand(direction, State.WALK, holder.getId());		
 	}
 	
 	private static void basicComm() throws IOException {

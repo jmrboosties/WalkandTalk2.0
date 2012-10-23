@@ -1,17 +1,16 @@
-package com.jesse.game.server;
+package com.jesse.game.data;
 
 import java.io.Serializable;
 
-
 import com.jesse.game.objects.Vector2i;
-import com.jesse.game.server.Constants.State;
+import com.jesse.game.utils.Constants.State;
 
 public class PlayerHolder implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
 	public Vector2i coordinates;
-	public int mId;
+	private int mId;
 	private String mName;
 	private State mState;
 	
@@ -43,7 +42,7 @@ public class PlayerHolder implements Serializable {
 	
 	public State getState() {
 		State state = mState;
-		mState = State.IDLE;
+//		mState = State.IDLE;
 		return state;
 	}
 	

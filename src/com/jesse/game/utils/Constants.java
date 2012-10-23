@@ -1,8 +1,8 @@
-package com.jesse.game.server;
+package com.jesse.game.utils;
 
 public class Constants {
 
-	public enum Facing {
+	public enum Direction {
 		DOWN, RIGHT, LEFT, UP
 	}
 	

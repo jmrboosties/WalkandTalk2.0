@@ -6,6 +6,8 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Timer;
 
+import com.jesse.game.data.Command;
+
 public class Server {
 	
 	private GameState mGameState;
@@ -19,7 +21,7 @@ public class Server {
 		mClientSockets = new ArrayList<Socket>();
 	}
 
-	public void start() throws IOException {		
+	public void start() throws IOException {
 		ServerSocket socket = new ServerSocket(7377);
 		boolean listening = true;
 

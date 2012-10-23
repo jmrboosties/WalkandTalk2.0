@@ -1,9 +1,11 @@
-package com.jesse.game.server;
+package com.jesse.game.data;
 
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.Set;
+
+import com.jesse.game.objects.Vector2i;
 
 public class GameState implements Serializable {
 
@@ -13,6 +15,7 @@ public class GameState implements Serializable {
 	
 	public GameState() {
 		mPlayers = new HashMap<Integer, PlayerHolder>();
+		mPlayers.put(0, new PlayerHolder(0, new Vector2i(), "jesse"));
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -26,6 +29,10 @@ public class GameState implements Serializable {
 	
 	public GameState next() {
 		return new GameState(this);
+	}
+	
+	public void addPlayer(PlayerHolder player) {
+		mPlayers.put(player.getId(), player);
 	}
 	
 	public String toString() {

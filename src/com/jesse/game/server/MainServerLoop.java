@@ -1,10 +1,9 @@
 package com.jesse.game.server;
 
 import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.net.Socket;
 import java.util.TimerTask;
 
+import com.jesse.game.data.Command;
 import com.jesse.game.utils.Print;
 
 public class MainServerLoop extends TimerTask {
@@ -20,19 +19,24 @@ public class MainServerLoop extends TimerTask {
 	public void run() {
 		mLoopCount++;
 		
+		Print.log("beginning of loop # " + mLoopCount + ": " + mServer.getState().toString());
+		
 		GameState currentState = mServer.getState();
 		GameState newState = currentState.next();
 		
-		for (Command command : mServer.getCommandQueue()) 
-			command.execute(newState.getPlayers().get(command.getId()));
+		boolean commandsRun = false;
+		for (Command command : mServer.getCommandQueue()) {
+			command.execute(newState.getPlayers().get(command.getPlayerId()));
+		}
 		
 		mServer.clearCommandQueue();
 		
-		try {
-			publishStateToClients(newState, currentState);
-		} catch(Exception e) {
-			e.printStackTrace();
-		}
+		if(commandsRun)
+			try {
+				publishStateToClients(newState, currentState);
+			} catch(Exception e) {
+				e.printStackTrace();
+			}
 		
 		mServer.setState(newState);
 		
@@ -41,14 +45,15 @@ public class MainServerLoop extends TimerTask {
 	}
 	
 	private void publishStateToClients(GameState newState, GameState oldState) throws IOException {
-		ObjectOutputStream objectOut = null;
-		for (Socket socket : mServer.getClientSockets()) {
-			objectOut = new ObjectOutputStream(socket.getOutputStream());
+//		ObjectOutputStream objectOut = null;
+//		for (Socket socket : mServer.getClientSockets()) {
+//			objectOut = new ObjectOutputStream(socket.getOutputStream());
+//		if(newState.getPlayers().size() > 0)
 			Print.log(newState.toString());
-			objectOut.writeObject(newState);
-			objectOut.reset();
-			objectOut.close();
-		}
+//			objectOut.writeObject(newState);
+//			objectOut.reset();
+//			objectOut.close();
+//		}
 		
 	}
 
