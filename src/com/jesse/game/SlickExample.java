@@ -1,5 +1,7 @@
 package com.jesse.game;
 
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.openal.AL;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
@@ -7,6 +9,7 @@ import org.lwjgl.util.vector.Vector2f;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.openal.Audio;
 import org.newdawn.slick.openal.AudioLoader;
+import org.newdawn.slick.openal.SoundStore;
 import org.newdawn.slick.opengl.Texture;
 import org.newdawn.slick.opengl.TextureLoader;
 import org.newdawn.slick.util.ResourceLoader;
@@ -30,6 +33,7 @@ public class SlickExample {
 			
 			if(Display.isCloseRequested()) {
 				Display.destroy();
+				AL.destroy();
 				System.exit(0);
 			}
 			
@@ -67,12 +71,10 @@ public class SlickExample {
 		try {
 			
 			mMusic = AudioLoader.getStreamingAudio("OGG", ResourceLoader.getResource("res/audio/music/samurai.ogg"));
-			if(mMusic == null)
-				System.out.println("shit");
-						
+
 			mMusic.playAsMusic(1f, 1f, true);
 			
-			mTexture = TextureLoader.getTexture("JPG", ResourceLoader.getResourceAsStream("res/images/conejo.jpg"));
+			mTexture = TextureLoader.getTexture("JPG", ResourceLoader.getResourceAsStream("res/images/turtles.jpg"));
 			
 			System.out.println("Texture loaded: " + mTexture);
 			System.out.println(">> Image width: " + mTexture.getImageWidth());
@@ -113,8 +115,13 @@ public class SlickExample {
 	}
 	
 	private void update() {
-		// TODO Auto-generated method stub
+		while (Keyboard.next())
+			if (Keyboard.getEventKey() == Keyboard.KEY_W)
+				if (Keyboard.getEventKeyState())
+					System.out.println("W is pressed");
 		
+		
+		SoundStore.get().poll(0);
 	}
 	
 	public static void main(String[] args) {

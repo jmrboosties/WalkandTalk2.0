@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" width="32" height="18" tilewidth="16" tileheight="16">
+ <tileset firstgid="1" name="pokemon" tilewidth="16" tileheight="16">
+  <image source="pokemontileset.png" width="128" height="2613"/>
+ </tileset>
+ <tileset firstgid="1305" name="collision" tilewidth="16" tileheight="16">
+  <image source="fetch.png" width="128" height="51"/>
+ </tileset>
+ <layer name="collision" width="32" height="18">
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAAC2NgGAWDAUiyYuJR+wc3GGh3DrT9Qw0MdPoi1X5qu3eo2T8KRgGtAQAII1xWAAkAAA==
+  </data>
+ </layer>
+ <layer name="behind" width="32" height="18">
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAAC2NgGAUgIMmKiUfB4Aaj8TS0wFDLX0PNvaNgFIwC0gAAw2/LHAAJAAA=
+  </data>
+ </layer>
+ <layer name="Tile Layer 1" width="32" height="18">
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAAC2NkYGBgHMWjeBSTjMWBWGIA7ZcHYoVBEA5DBcPia6DijR+IBZBoeruXVPNg6Yta6Yza5o3iUUwpBgBtKzZEAAkAAA==
+  </data>
+ </layer>
+ <layer name="tops" width="32" height="18">
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAAC+3ROQqAUAxF0XwQdOtOhVPhVDjt02thY6WggY95cOobiIjtWOxEEqTIkDvdfkGvRIUajXK/pdehx4BRuT/Rm7FgxXajHyL6/DLbWzv/5cvffLvXZnu64OJv/R2tG+cYAAkAAA==
+  </data>
+ </layer>
+</map>
