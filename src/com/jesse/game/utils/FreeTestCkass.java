@@ -3,14 +3,13 @@ package com.jesse.game.utils;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.jesse.game.data.Command;
 import com.jesse.game.data.MoveCommand;
 import com.jesse.game.data.PlayerHolder;
@@ -21,8 +20,8 @@ import com.jesse.game.utils.Constants.State;
 public class FreeTestCkass {
 
 	public static void main(String[] args) throws IOException, ClassNotFoundException {
-//		testMovement();
-		gaylord();
+		testMovement();
+//		gaylord();
 	}
 	
 	public static void gaylord() {
@@ -32,7 +31,7 @@ public class FreeTestCkass {
 		Print.log("the gson value: " + gson);
 		JsonObject jObj = new JsonObject();
 		jObj.addProperty("command_type", 1);
-		jObj.addProperty("command", gson);
+		jObj.add("command", new JsonParser().parse(gson));
 		
 		Print.log("the data packet: " + jObj.toString());
 		JsonElement newGson = jObj.getAsJsonObject("command");
@@ -42,17 +41,18 @@ public class FreeTestCkass {
 	
 	private static void testMovement() throws IOException, ClassNotFoundException {
 		Socket socket = null;
-		ObjectOutputStream objectOut = null;
-		ObjectInputStream objectIn = null;
-//		BufferedReader in = null;
+		PrintWriter out = null;
+//		ObjectOutputStream objectOut = null;
+//		ObjectInputStream objectIn = null;
+		BufferedReader in = null;
 		
 		try {
 			
 			socket = new Socket("localhost", 7377);
-			objectOut = new ObjectOutputStream(socket.getOutputStream());
-			objectOut.flush();
-			objectIn = new ObjectInputStream(socket.getInputStream());
-//			in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+//			objectOut = new ObjectOutputStream(socket.getOutputStream());
+			out = new PrintWriter(socket.getOutputStream(), true);
+//			objectIn = new ObjectInputStream(socket.getInputStream());
+			in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 			
 		} catch(Exception e) {
 			e.printStackTrace();
@@ -60,43 +60,38 @@ public class FreeTestCkass {
 		
 		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 		
-//		String serverOutput;
-//		Vector2i position = new Vector2i(5, 5);
+		String serverOutput;
 		PlayerHolder holder = new PlayerHolder(0, new Vector2i(), "jesse");
 		Command command;
 		boolean sending = true;
+		JsonParser parser = new JsonParser();
 		Print.log("entering the while, wish me luck men");
 		while(sending) {
-//			(state = (GameState) objectIn.readObject()) != null
-//			if(state != null) {
-//				Print.log(state.toString());
-//			}
-//			Print.log("Server says: " + serverOutput);
-//			
-//			if(serverOutput.equals("gay"))
-//				break;
-
-//			holder = calculatePosition(holder, reader);
+			serverOutput = in.readLine();
+			if(serverOutput != null)
+				handleGameState(serverOutput);
+				
 			command = takeInput(holder, reader);
-			Print.log("sending over: " + command.toString());
 			String gson = command.getGson();
-			Print.log("the gson value: " + gson);
 			JsonObject jObj = new JsonObject();
 			jObj.addProperty("command_type", 1);
-			jObj.addProperty("command", gson);
+			jObj.add("command", parser.parse(gson));
 			Print.log("the data packet: " + jObj.toString());
-			JsonElement newGson = jObj.getAsJsonObject("command");
-			MoveCommand commando = new Gson().fromJson(newGson, MoveCommand.class);
-			Print.log("commando: " + commando.toString());
-			objectOut.writeObject(command);
-			objectOut.reset();
+			out.println(jObj.toString());
+//			objectOut.writeObject(command);
+//			objectOut.reset();
 		}
 		
-		objectOut.close();
-		objectIn.close();
-//		in.close();
+//		objectOut.close();
+//		objectIn.close();
+		in.close();
+		out.close();
 		reader.close();
 		socket.close();
+	}
+	
+	private static void handleGameState(String serverOutput) {
+		
 	}
 	
 	private static Vector2i calculatePosition(Vector2i position, BufferedReader reader) throws IOException {

@@ -55,4 +55,15 @@ public class Vector2i implements Comparable<Vector2i>, Serializable {
 		return x + ", " + y;
 	}
 	
+	public boolean touching(Vector2i vector) {
+		if(this.equals(vector))
+			return true;
+		else if(Math.abs(this.x - vector.x) == 1)
+			return true;
+		else if(Math.abs(this.y - vector.y) == 1)
+			return true;
+		else
+			return false;
+	}
+	
 }

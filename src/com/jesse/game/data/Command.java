@@ -2,7 +2,9 @@ package com.jesse.game.data;
 
 import java.io.Serializable;
 
-public abstract class Command implements Serializable {
+import com.jesse.game.utils.Gsonable;
+
+public abstract class Command implements Serializable, Gsonable {
 	
 	private static final long serialVersionUID = 1L;
 	
@@ -16,6 +18,4 @@ public abstract class Command implements Serializable {
 		
 	public abstract String toString();
 	
-	public abstract String getGson();
-
 }

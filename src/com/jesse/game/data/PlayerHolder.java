@@ -4,8 +4,9 @@ import java.io.Serializable;
 
 import com.jesse.game.objects.Vector2i;
 import com.jesse.game.utils.Constants.State;
+import com.jesse.game.utils.Gsonable;
 
-public class PlayerHolder implements Serializable {
+public class PlayerHolder implements Serializable, Gsonable {
 
 	private static final long serialVersionUID = 1L;
 
@@ -52,5 +53,11 @@ public class PlayerHolder implements Serializable {
 	
 	public String toString() {
 		return mId + ": " + mName + " @ " + coordinates.toString();
+	}
+
+	@Override
+	public String getGson() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

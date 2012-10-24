@@ -6,8 +6,9 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import com.jesse.game.objects.Vector2i;
+import com.jesse.game.utils.Gsonable;
 
-public class GameState implements Serializable {
+public class GameState implements Serializable, Gsonable {
 
 	private static final long serialVersionUID = 1L;
 	
@@ -44,6 +45,12 @@ public class GameState implements Serializable {
 		}
 		value += "\n  End.";
 		return value;
+	}
+
+	@Override
+	public String getGson() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }
