@@ -8,6 +8,9 @@ import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.jesse.game.data.Command;
 import com.jesse.game.data.MoveCommand;
 import com.jesse.game.data.PlayerHolder;
@@ -18,7 +21,23 @@ import com.jesse.game.utils.Constants.State;
 public class FreeTestCkass {
 
 	public static void main(String[] args) throws IOException, ClassNotFoundException {
-		testMovement();
+//		testMovement();
+		gaylord();
+	}
+	
+	public static void gaylord() {
+		MoveCommand command = new MoveCommand(Direction.UP, State.WALK, 0);
+		Print.log("sending over: " + command.toString());
+		String gson = command.getGson();
+		Print.log("the gson value: " + gson);
+		JsonObject jObj = new JsonObject();
+		jObj.addProperty("command_type", 1);
+		jObj.addProperty("command", gson);
+		
+		Print.log("the data packet: " + jObj.toString());
+		JsonElement newGson = jObj.getAsJsonObject("command");
+		MoveCommand commando = new Gson().fromJson(newGson, MoveCommand.class);
+		Print.log("commando: " + commando.toString());
 	}
 	
 	private static void testMovement() throws IOException, ClassNotFoundException {
@@ -60,7 +79,15 @@ public class FreeTestCkass {
 //			holder = calculatePosition(holder, reader);
 			command = takeInput(holder, reader);
 			Print.log("sending over: " + command.toString());
-			Print.log("the gson value: " + command.getGson());
+			String gson = command.getGson();
+			Print.log("the gson value: " + gson);
+			JsonObject jObj = new JsonObject();
+			jObj.addProperty("command_type", 1);
+			jObj.addProperty("command", gson);
+			Print.log("the data packet: " + jObj.toString());
+			JsonElement newGson = jObj.getAsJsonObject("command");
+			MoveCommand commando = new Gson().fromJson(newGson, MoveCommand.class);
+			Print.log("commando: " + commando.toString());
 			objectOut.writeObject(command);
 			objectOut.reset();
 		}

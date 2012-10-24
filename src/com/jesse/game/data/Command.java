@@ -8,7 +8,7 @@ public abstract class Command implements Serializable {
 	
 	protected int mPlayerId;
 	
-	public abstract void execute(PlayerHolder playerHolder);
+	public abstract void execute(PlayerHolder holder);
 	
 	public int getPlayerId() {
 		return mPlayerId;

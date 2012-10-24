@@ -54,7 +54,6 @@ public class MoveCommand extends Command {
 	public String getGson() {
 		Gson gson = new Gson();
 		String json = gson.toJson(this);
-		Print.log(json);
 		return json;
 	}	
 	

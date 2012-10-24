@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.TimerTask;
 
 import com.jesse.game.data.Command;
+import com.jesse.game.data.GameState;
 import com.jesse.game.utils.Print;
 
 public class MainServerLoop extends TimerTask {
@@ -19,7 +20,7 @@ public class MainServerLoop extends TimerTask {
 	public void run() {
 		mLoopCount++;
 		
-		Print.log("beginning of loop # " + mLoopCount + ": " + mServer.getState().toString());
+//		Print.log("beginning of loop # " + mLoopCount + ": " + mServer.getState().toString());
 		
 		GameState currentState = mServer.getState();
 		GameState newState = currentState.next();

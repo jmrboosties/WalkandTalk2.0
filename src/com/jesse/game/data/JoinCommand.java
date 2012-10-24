@@ -2,7 +2,7 @@ package com.jesse.game.data;
 
 public class JoinCommand extends Command {
 	
-	
+	private static final long serialVersionUID = 1L;
 
 	@Override
 	public void execute(PlayerHolder player) {
