@@ -1,5 +1,7 @@
 package com.jesse.game.utils;
 
+import com.google.gson.JsonObject;
+
 public interface Gsonable  {
 
 	/**

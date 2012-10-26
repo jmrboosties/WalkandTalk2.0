@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.Map.Entry;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -20,8 +21,18 @@ import com.jesse.game.utils.Constants.State;
 public class FreeTestCkass {
 
 	public static void main(String[] args) throws IOException, ClassNotFoundException {
-		stupid();
+//		stupid();
 //		hyoer();
+		ugh();
+	}
+	
+	private static void ugh() {
+		Gson gson = new Gson();
+		Vector2i vec = new Vector2i(54, 40);
+		long time = System.currentTimeMillis();
+		gson.toJson(vec);
+//		JsonObject job = (JsonObject) new JsonParser().parse(vec.getGson());
+		Print.log(System.currentTimeMillis() - time + "");
 	}
 	
 	private static void hyoer() {
@@ -34,57 +45,63 @@ public class FreeTestCkass {
 //		copy.setState(State.RUN);
 		
 		Print.log(original.equals(copy) + "");
+		
+		long time = System.currentTimeMillis();
+		copy.getGson();
+		Print.log(System.currentTimeMillis() - time + "");
+		
 	}
 	
 	private static void stupid() {
+		JsonParser parser = new JsonParser();
+		
 		PlayerHolder original = new PlayerHolder(0, new Vector2i(3, 5), "lone fucking behold");
 		PlayerHolder holder = new PlayerHolder(56, new Vector2i(3,4), "im gay");
 		PlayerHolder jon = new PlayerHolder(54, new Vector2i(3,4), "im ga");
-		PlayerHolder hoder = new PlayerHolder(26, new Vector2i(3,4), "gof");
-//		PlayerHolder original1 = new PlayerHolder(10, new Vector2i(3, 5), "lone fucking behold");
-//		PlayerHolder holder1 = new PlayerHolder(561, new Vector2i(3,4), "im gay");
-//		PlayerHolder jon1 = new PlayerHolder(541, new Vector2i(3,4), "im ga");
-//		PlayerHolder hoder1 = new PlayerHolder(261, new Vector2i(3,4), "gof");
+		PlayerHolder hoder = new PlayerHolder(26, new Vector2i(60,4), "gof");
 		
-		GameState oldState = new GameState();		
+		GameState oldState = new GameState();
 		oldState.addPlayer(holder);
-		oldState.addPlayer(original);
 		oldState.addPlayer(hoder);
-		oldState.addPlayer(jon);
-//		oldState.addPlayer(holder1);
-//		oldState.addPlayer(original1);
-//		oldState.addPlayer(hoder1);
-//		oldState.addPlayer(jon1);
-		
 		
 		GameState newState = oldState.next();
-		Print.log(oldState.toString());
-		Print.log(newState.toString());
-		newState.getPlayers().get(0).coordinates.x++;
-		long time = System.nanoTime();
-		boolean bool = newState.equals(oldState);
-		Print.log(System.nanoTime() - time + "");
-		Print.log(bool + "");
-		Print.log(newState.toString());
-		Print.log(oldState.toString());
+		newState.getPlayers().get(56).coordinates.x++;
+		newState.addPlayer(original);
+		newState.addPlayer(jon);
 		
-//		JsonObject jObj;
-//		PlayerHolder player;
-//		int key;
-//		for (Entry<Integer, PlayerHolder> entry : newState.getPlayers().entrySet()) {
-//			key = entry.getKey();
-//			player = entry.getValue();
-//			
-//			if(!oldState.getPlayers().containsKey(key)) {
-//				//Add a FULL player to the data packet
-//			}
-//			else if(!player.equals(oldState.getPlayers().get(key))) {
-//				//Time to find out what is different. key and name never change.
-//				if(!player.coordinates.equals(oldState.getPlayers().get(key).coordinates)) {
-//					jObj = (JsonObject) parser.parse(player.getGson(true, false, true, false));
-//				}
-//			}			
-//		}	
+		JsonObject stateJson = new JsonObject();
+		JsonObject playersJson = new JsonObject();
+//		stateJson.add("mPlayers", null);
+//		Print.log(stateJson.toString());
+		
+		long time = System.currentTimeMillis();
+		
+		JsonObject jObj = null;
+		PlayerHolder player;
+		int key;
+		for (Entry<Integer, PlayerHolder> entry : newState.getPlayers().entrySet()) {
+			key = entry.getKey();
+			player = entry.getValue();
+			if(!oldState.getPlayers().containsKey(key)) {
+				jObj = (JsonObject) parser.parse(player.getGson());
+			}
+			else if(!player.equals(oldState.getPlayers().get(key))) {
+				//Time to find out what is different. key and name never change.
+				if(!player.coordinates.equals(oldState.getPlayers().get(key).coordinates)) {
+					jObj = (JsonObject) parser.parse(player.getGson(true, false, true, false));
+				}
+			}
+			
+			if(jObj != null)
+				playersJson.add(String.valueOf(key), jObj);
+			
+			jObj = null;
+		}
+		
+		stateJson.add("mPlayers", playersJson);
+		Print.log(System.currentTimeMillis() - time + "");
+		Print.log(stateJson.toString());
+		Print.log(new Gson().toJson(newState));
 	}
 	
 	private static void gaylord() {

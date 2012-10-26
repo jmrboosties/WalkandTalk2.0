@@ -73,7 +73,7 @@ public class MainServerLoop extends TimerTask {
 			else if(!player.equals(oldState.getPlayers().get(key))) {
 				//Time to find out what is different. key and name never change.
 				if(!player.coordinates.equals(oldState.getPlayers().get(key).coordinates)) {
-					jObj = (JsonObject) parser.parse(player.getGson(true, false, true, false));
+//					jObj = (JsonObject) parser.parse(player.getGson(true, false, true, false));
 				}
 			}			
 		}		

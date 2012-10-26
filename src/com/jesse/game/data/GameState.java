@@ -8,7 +8,6 @@ import java.util.Set;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import com.jesse.game.utils.Gsonable;
-import com.jesse.game.utils.Print;
 
 public class GameState implements Serializable, Gsonable {
 
@@ -26,10 +25,9 @@ public class GameState implements Serializable, Gsonable {
 	
 	public GameState next() {
 		GameState newState = new GameState();
-		for (Entry<Integer, PlayerHolder> entry : mPlayers.entrySet()) {
-			Print.log("copying");
+		
+		for (Entry<Integer, PlayerHolder> entry : mPlayers.entrySet())
 			newState.getPlayers().put(Integer.valueOf(entry.getKey()), new PlayerHolder(entry.getValue()));
-		}
 		
 		return newState;
 	}

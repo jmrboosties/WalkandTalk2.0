@@ -4,6 +4,8 @@ import java.io.Serializable;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.jesse.game.utils.Gsonable;
 
 public class Vector2i implements Comparable<Vector2i>, Serializable, Gsonable {
@@ -70,7 +72,13 @@ public class Vector2i implements Comparable<Vector2i>, Serializable, Gsonable {
 
 	@Override
 	public String getGson(boolean... bools) {
-		return "{\"x\":"+x+",\"y\":"+y+"}";
+//		return "{\"x\":"+x+",\"y\":"+y+"}";
+		return new Gson().toJson(this);
+//		return (JsonObject) new Gson().toJsonTree(this);
+	}
+	
+	public JsonObject returno() {
+		return (JsonObject) new Gson().toJsonTree(this);
 	}
 	
 }

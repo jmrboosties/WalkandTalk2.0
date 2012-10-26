@@ -111,6 +111,7 @@ public class PlayerHolder implements Serializable, Gsonable {
 		if(bs != null && bs.length > 0) {
 			if(bs[COORDINATES])
 				json.add("coordinates", new JsonParser().parse(coordinates.getGson()));
+//				json.add("coordinates", coordinates.getGson());
 			if(bs[NAME])
 				json.addProperty("mName", mName);
 			if(bs[STATE])
@@ -119,7 +120,8 @@ public class PlayerHolder implements Serializable, Gsonable {
 				json.addProperty("mId", mId);
 		}
 		else {
-			json.add("coordinates", new JsonParser().parse(coordinates.getGson()));
+//			json.add("coordinates", new JsonParser().parse(coordinates.getGson()));
+//			json.add("coordinates", coordinates.getGson());
 			json.addProperty("mName", mName);
 			json.addProperty("mState", mState.toString());
 		}
