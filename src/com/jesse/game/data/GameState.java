@@ -7,7 +7,9 @@ import java.util.Set;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
+import com.google.gson.JsonObject;
 import com.jesse.game.utils.Gsonable;
+import com.jesse.game.utils.Print;
 
 public class GameState implements Serializable, Gsonable {
 
@@ -66,9 +68,29 @@ public class GameState implements Serializable, Gsonable {
 	}
 
 	@Override
-	public String getGson(boolean...bs) {
+	public JsonObject getGson(boolean...bs) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+	
+	public void update(GameState updateState) {
+		int key;
+		PlayerHolder player;
+		for (Entry<Integer, PlayerHolder> entry : updateState.getPlayers().entrySet()) {
+			key = entry.getKey();
+			player = entry.getValue();
+			player.setId(key);
+			
+			if(mPlayers.containsKey(key))
+				mPlayers.get(key).update(player);
+			else {
+				//New friend
+				Print.log(player.getName() + " has joined!");
+				mPlayers.put(key, player);
+			}
+		}
+		
+		Print.log(toString());
 	}
 
 }

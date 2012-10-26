@@ -3,21 +3,16 @@ package com.jesse.server;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.Map.Entry;
 import java.util.TimerTask;
+import java.util.Map.Entry;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import com.jesse.game.data.Command;
 import com.jesse.game.data.GameState;
 import com.jesse.game.data.PlayerHolder;
 import com.jesse.game.utils.Print;
 
 public class MainServerLoop extends TimerTask {
-
-	private static Gson gson = new Gson();
-	private static JsonParser parser = new JsonParser();
 	
 	private Server mServer;
 	private long mLoopCount = 0;
@@ -30,14 +25,26 @@ public class MainServerLoop extends TimerTask {
 	public void run() {
 		mLoopCount++;
 		
-//		Print.log("beginning of loop # " + mLoopCount + ": " + mServer.getState().toString());
-		
 		GameState currentState = mServer.getState();
 		GameState newState = currentState.next();
 		
 		boolean commandsRun = false;
 		for (Command command : mServer.getCommandQueue()) {
-			command.execute(newState.getPlayers().get(command.getPlayerId()));
+			switch(command.getCommandType()) {
+			case Command.COMMAND_JOIN :
+				
+				break;
+			case Command.COMMAND_MOVE :
+				
+				break;
+			}
+			PlayerHolder holder = newState.getPlayers().get(command.getPlayerId());
+			if(holder == null) {
+				//This is when a player joins...
+				holder = new PlayerHolder(command.getPlayerId());
+				newState.addPlayer(holder);
+			}
+			command.execute(holder);
 			commandsRun = true;
 		}
 		
@@ -60,33 +67,37 @@ public class MainServerLoop extends TimerTask {
 		if(newState.equals(oldState))
 			return;
 		
-		JsonObject jObj;
+		JsonObject stateJson = new JsonObject();
+		JsonObject playersJson = new JsonObject();
+		
+		JsonObject jObj = null;
 		PlayerHolder player;
 		int key;
 		for (Entry<Integer, PlayerHolder> entry : newState.getPlayers().entrySet()) {
 			key = entry.getKey();
 			player = entry.getValue();
-			
 			if(!oldState.getPlayers().containsKey(key)) {
-				//Add a FULL player to the data packet
+				jObj = player.getGson();
 			}
 			else if(!player.equals(oldState.getPlayers().get(key))) {
-				//Time to find out what is different. key and name never change.
 				if(!player.coordinates.equals(oldState.getPlayers().get(key).coordinates)) {
-//					jObj = (JsonObject) parser.parse(player.getGson(true, false, true, false));
+					jObj = player.getGson(true, false, true, false);
 				}
-			}			
-		}		
+			}
+			
+			if(jObj != null)
+				playersJson.add(String.valueOf(key), jObj);
+			
+			jObj = null;
+		}
 		
-		
-		
-		
+		stateJson.add("mPlayers", playersJson);
 		
 		Print.log(newState.toString());
 		PrintWriter out;
 		for (Socket socket : mServer.getClientSockets()) {
 			out = new PrintWriter(socket.getOutputStream(), true);
-			String json = gson.toJson(newState);
+			String json = stateJson.toString();
 			Print.log(json);
 			out.println(json);
 		}

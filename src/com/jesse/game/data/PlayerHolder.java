@@ -5,7 +5,6 @@ import java.io.Serializable;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import com.jesse.game.objects.Vector2i;
 import com.jesse.game.utils.Constants.State;
 import com.jesse.game.utils.Gsonable;
@@ -103,15 +102,15 @@ public class PlayerHolder implements Serializable, Gsonable {
 	}
 
 	@Override
-	public String getGson(boolean... bs) {
+	public JsonObject getGson(boolean... bs) {
 		JsonObject json = new JsonObject();
 		if(bs.length > 0 && bs.length < 4)
 			throw new IllegalArgumentException("Either pass 4 or no booleans.");
 		
 		if(bs != null && bs.length > 0) {
 			if(bs[COORDINATES])
-				json.add("coordinates", new JsonParser().parse(coordinates.getGson()));
-//				json.add("coordinates", coordinates.getGson());
+//				json.add("coordinates", new JsonParser().parse(coordinates.getGson()));
+				json.add("coordinates", coordinates.getGson());
 			if(bs[NAME])
 				json.addProperty("mName", mName);
 			if(bs[STATE])
@@ -120,13 +119,17 @@ public class PlayerHolder implements Serializable, Gsonable {
 				json.addProperty("mId", mId);
 		}
 		else {
-//			json.add("coordinates", new JsonParser().parse(coordinates.getGson()));
-//			json.add("coordinates", coordinates.getGson());
+			json.add("coordinates", coordinates.getGson());
 			json.addProperty("mName", mName);
 			json.addProperty("mState", mState.toString());
+//			json.addProperty("mId", mId); //TODO remove when you write your own json->object thing, use key
 		}
 		
-		return json.toString();
+		return json;
+	}
+	
+	public void setId(int i) {
+		mId = i;
 	}
 	
 	public void update(PlayerHolder holder) {

@@ -11,6 +11,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.jesse.game.data.Command;
+import com.jesse.game.data.JoinCommand;
 import com.jesse.game.data.MoveCommand;
 import com.jesse.game.utils.Print;
 
@@ -37,13 +38,25 @@ public class ServerThread extends Thread {
 			out.println("Hey you're connected");
 			
 			String commandJsonString;
-			Command command;			
+			Command command = null;
 			while((commandJsonString = in.readLine()) != null) {
-				JsonObject commandJson = (JsonObject) parser.parse(commandJsonString);
-				commandJson = commandJson.getAsJsonObject("command");
-				command = gson.fromJson(commandJson, MoveCommand.class);
+				long time = System.currentTimeMillis();
+				JsonObject json = (JsonObject) parser.parse(commandJsonString);
+				JsonObject commandJson = json.getAsJsonObject("command");
 				
-				mServer.addCommand(command);
+				switch(json.getAsJsonPrimitive("command_type").getAsInt()) {
+				case Command.COMMAND_JOIN :
+					command = gson.fromJson(commandJson, JoinCommand.class);
+					break;
+				case Command.COMMAND_MOVE :
+					command = gson.fromJson(commandJson, MoveCommand.class);
+					break;
+				}
+				
+				if(command != null)
+					mServer.addCommand(command);
+				
+				Print.log(System.currentTimeMillis() - time + "");
 			}
 			
 			in.close();

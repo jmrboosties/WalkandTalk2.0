@@ -18,6 +18,7 @@ public class Server {
 	
 	public Server() {
 		mGameState = new GameState();
+//		mGameState.addPlayer(new PlayerHolder(0, new Vector2i(), "jesse"));
 		mCommandList = new ArrayList<Command>();
 		mClientSockets = new ArrayList<Socket>();
 	}

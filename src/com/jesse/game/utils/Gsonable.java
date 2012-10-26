@@ -2,6 +2,7 @@ package com.jesse.game.utils;
 
 import com.google.gson.JsonObject;
 
+
 public interface Gsonable  {
 
 	/**
@@ -10,6 +11,6 @@ public interface Gsonable  {
 	 * @param bools
 	 * @return
 	 */
-	public String getGson(boolean... bools);
+	public JsonObject getGson(boolean... bools);
 	
 }

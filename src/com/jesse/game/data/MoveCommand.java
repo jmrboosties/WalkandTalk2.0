@@ -1,6 +1,6 @@
 package com.jesse.game.data;
 
-import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.jesse.game.utils.Constants.Direction;
 import com.jesse.game.utils.Constants.State;
 import com.jesse.game.utils.Print;
@@ -20,6 +20,7 @@ public class MoveCommand extends Command {
 		mDirection = direction;
 		mState = state;
 		mPlayerId = playerId;
+		mCommandType = COMMAND_MOVE;
 	}
 	
 	@Override
@@ -51,10 +52,14 @@ public class MoveCommand extends Command {
 	}
 
 	@Override
-	public String getGson(boolean... bs) {
-		Gson gson = new Gson();
-		String json = gson.toJson(this);
-		return json;
+	public JsonObject getGson(boolean... bs) {
+		JsonObject jObj = new JsonObject();
+		JsonObject commandJson = new JsonObject();
+		commandJson.addProperty("mDirection", mDirection.toString());
+		commandJson.addProperty("mState", mState.toString());
+		jObj.addProperty("command_type", 1);
+		jObj.add("command", commandJson);
+		return jObj;
 	}	
 	
 }
