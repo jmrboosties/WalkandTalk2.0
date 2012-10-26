@@ -4,7 +4,9 @@ import java.io.Serializable;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-public class Vector2i implements Comparable<Vector2i>, Serializable {
+import com.jesse.game.utils.Gsonable;
+
+public class Vector2i implements Comparable<Vector2i>, Serializable, Gsonable {
 
 	private static final long serialVersionUID = 1L;
 	
@@ -64,6 +66,11 @@ public class Vector2i implements Comparable<Vector2i>, Serializable {
 			return true;
 		else
 			return false;
+	}
+
+	@Override
+	public String getGson(boolean... bools) {
+		return "{\"x\":"+x+",\"y\":"+y+"}";
 	}
 	
 }

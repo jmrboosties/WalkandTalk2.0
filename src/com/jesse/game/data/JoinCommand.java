@@ -17,7 +17,7 @@ public class JoinCommand extends Command {
 	}
 
 	@Override
-	public String getGson() {
+	public String getGson(boolean... bs) {
 		// TODO Auto-generated method stub
 		return null;
 	}

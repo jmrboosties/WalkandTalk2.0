@@ -5,8 +5,10 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import com.jesse.game.objects.Vector2i;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 import com.jesse.game.utils.Gsonable;
+import com.jesse.game.utils.Print;
 
 public class GameState implements Serializable, Gsonable {
 
@@ -16,20 +18,20 @@ public class GameState implements Serializable, Gsonable {
 	
 	public GameState() {
 		mPlayers = new HashMap<Integer, PlayerHolder>();
-		mPlayers.put(0, new PlayerHolder(0, new Vector2i(), "jesse"));
 	}
-	
-	@SuppressWarnings("unchecked")
-	public GameState(GameState gameState) {
-		mPlayers = (HashMap<Integer, PlayerHolder>) gameState.getPlayers().clone();
-	}
-	
+		
 	public HashMap<Integer, PlayerHolder> getPlayers() {
 		return mPlayers;
 	}
 	
 	public GameState next() {
-		return new GameState(this);
+		GameState newState = new GameState();
+		for (Entry<Integer, PlayerHolder> entry : mPlayers.entrySet()) {
+			Print.log("copying");
+			newState.getPlayers().put(Integer.valueOf(entry.getKey()), new PlayerHolder(entry.getValue()));
+		}
+		
+		return newState;
 	}
 	
 	public void addPlayer(PlayerHolder player) {
@@ -46,9 +48,27 @@ public class GameState implements Serializable, Gsonable {
 		value += "\n  End.";
 		return value;
 	}
+	
+	public boolean equals(Object o) {
+		try {
+			GameState compared = (GameState) o;
+			if(mPlayers.equals(compared.getPlayers()))
+				return true;
+			else
+				return false;
+		} catch(ClassCastException e){
+			return false;
+		}
+	}
+	
+	public int hashCode() {
+		return new HashCodeBuilder(19, 23)
+			.append(mPlayers)
+			.toHashCode();
+	}
 
 	@Override
-	public String getGson() {
+	public String getGson(boolean...bs) {
 		// TODO Auto-generated method stub
 		return null;
 	}

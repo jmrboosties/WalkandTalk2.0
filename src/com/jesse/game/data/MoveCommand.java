@@ -51,7 +51,7 @@ public class MoveCommand extends Command {
 	}
 
 	@Override
-	public String getGson() {
+	public String getGson(boolean... bs) {
 		Gson gson = new Gson();
 		String json = gson.toJson(this);
 		return json;
