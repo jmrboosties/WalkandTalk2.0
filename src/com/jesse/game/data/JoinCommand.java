@@ -12,13 +12,17 @@ public class JoinCommand extends Command {
 	public JoinCommand(PlayerHolder player) {
 		mPlayer = player;
 		mPlayerId = mPlayer.getId();
+		Print.log("id: " + mPlayerId);
 		mCommandType = COMMAND_JOIN;
 	}
 	
 	@Override
 	public void execute(PlayerHolder player) {
-		player = new PlayerHolder(mPlayer);
+		player.setState(mPlayer.getState());
+		player.coordinates = mPlayer.coordinates;
+		player.setName(mPlayer.getName());
 		Print.log(player.getName() + " has joined the game!");
+		Print.log("player gson" + player.getGson(true, true, true, true).toString());
 	}
 
 	@Override
@@ -28,9 +32,13 @@ public class JoinCommand extends Command {
 
 	@Override
 	public JsonObject getGson(boolean... bs) {
+		JsonObject playerObj = new JsonObject();
+		playerObj.add("mPlayer", mPlayer.getGson(true, true, true, true));
 		JsonObject job = new JsonObject();
 		job.addProperty("command_type", 0);
-		job.add("player", mPlayer.getGson());
+		job.add("command", playerObj);
+		job.addProperty("mPlayerId", mPlayerId);
+		Print.log("result of gson: " + job.toString());
 		return job;
 	}
 

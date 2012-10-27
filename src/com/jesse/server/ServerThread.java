@@ -35,16 +35,32 @@ public class ServerThread extends Thread {
 			PrintWriter out = new PrintWriter(mSocket.getOutputStream(), true);
 			BufferedReader in = new BufferedReader(new InputStreamReader(mSocket.getInputStream()));
 			
+			String joinJsonString = in.readLine();
+			if(joinJsonString != null) {
+				JsonObject joinJson = (JsonObject) parser.parse(joinJsonString);
+				JsonObject commandJson = joinJson.getAsJsonObject("command");
+				Command joinCommand = gson.fromJson(commandJson, JoinCommand.class);
+				joinCommand.setPlayerId(joinJson.getAsJsonPrimitive("mPlayerId").getAsInt());
+				
+				Print.log(joinCommand.getGson().toString());
+				if(joinCommand != null)
+					mServer.addCommand(joinCommand);	
+			}
+			
 			out.println("Hey you're connected");
 			
 			String commandJsonString;
 			Command command = null;
+			int type;
+			JsonObject json;
+			JsonObject commandJson;
 			while((commandJsonString = in.readLine()) != null) {
-				long time = System.currentTimeMillis();
-				JsonObject json = (JsonObject) parser.parse(commandJsonString);
-				JsonObject commandJson = json.getAsJsonObject("command");
+				json = (JsonObject) parser.parse(commandJsonString);
+				commandJson = json.getAsJsonObject("command");
 				
-				switch(json.getAsJsonPrimitive("command_type").getAsInt()) {
+				type = json.getAsJsonPrimitive("command_type").getAsInt();
+				
+				switch(type) {
 				case Command.COMMAND_JOIN :
 					command = gson.fromJson(commandJson, JoinCommand.class);
 					break;
@@ -53,10 +69,11 @@ public class ServerThread extends Thread {
 					break;
 				}
 				
+				command.setCommandType(type);
+				
 				if(command != null)
 					mServer.addCommand(command);
 				
-				Print.log(System.currentTimeMillis() - time + "");
 			}
 			
 			in.close();

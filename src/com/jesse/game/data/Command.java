@@ -20,8 +20,16 @@ public abstract class Command implements Serializable, Gsonable {
 		return mPlayerId;
 	}
 	
+	public void setPlayerId(int id) {
+		mPlayerId = id;
+	}
+	
 	public int getCommandType() {
 		return mCommandType;
+	}
+	
+	public void setCommandType(int type) {
+		mCommandType = type;
 	}
 		
 	public abstract String toString();

@@ -12,6 +12,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.jesse.game.data.Command;
 import com.jesse.game.data.GameState;
+import com.jesse.game.data.JoinCommand;
 import com.jesse.game.data.MoveCommand;
 import com.jesse.game.data.PlayerHolder;
 import com.jesse.game.objects.Vector2i;
@@ -144,7 +145,7 @@ public class FreeTestCkass {
 	
 	private static void testMovement() throws IOException, ClassNotFoundException {
 		GameState state = new GameState();
-		PlayerHolder holder = new PlayerHolder(0, new Vector2i(), "jesse");
+		PlayerHolder holder = new PlayerHolder(7, new Vector2i(5, 5), "jesse");
 		state.addPlayer(holder);
 		
 		Socket socket = null;
@@ -159,6 +160,9 @@ public class FreeTestCkass {
 			e.printStackTrace();
 		}
 		
+		JoinCommand join = new JoinCommand(holder);
+		out.println(join.getGson());
+		
 		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 		
 		String serverOutput;
@@ -166,8 +170,6 @@ public class FreeTestCkass {
 		boolean sending = true;
 		
 		while(sending) {
-			Print.log(state.toString());
-			
 			serverOutput = in.readLine();
 			if(serverOutput != null)
 				handleGameState(state, serverOutput);
@@ -175,9 +177,6 @@ public class FreeTestCkass {
 			command = takeInput(holder, reader);
 			
 			long time = System.currentTimeMillis();
-//			JsonObject jObj = new JsonObject();
-//			jObj.addProperty("command_type", 1);
-//			jObj.add("command", command.getGson());
 			JsonObject json = command.getGson();
 			Print.log("the data packet: " + json);
 			out.println(json);

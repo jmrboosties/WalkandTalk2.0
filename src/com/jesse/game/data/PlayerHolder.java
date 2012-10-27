@@ -52,6 +52,10 @@ public class PlayerHolder implements Serializable, Gsonable {
 		return mName;
 	}
 	
+	public void setName(String name) {
+		mName = name;
+	}
+	
 	public int getId() {
 		return mId;
 	}
@@ -109,7 +113,6 @@ public class PlayerHolder implements Serializable, Gsonable {
 		
 		if(bs != null && bs.length > 0) {
 			if(bs[COORDINATES])
-//				json.add("coordinates", new JsonParser().parse(coordinates.getGson()));
 				json.add("coordinates", coordinates.getGson());
 			if(bs[NAME])
 				json.addProperty("mName", mName);

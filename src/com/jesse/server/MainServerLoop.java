@@ -29,23 +29,24 @@ public class MainServerLoop extends TimerTask {
 		GameState newState = currentState.next();
 		
 		boolean commandsRun = false;
+		PlayerHolder holder = null;
 		for (Command command : mServer.getCommandQueue()) {
 			switch(command.getCommandType()) {
 			case Command.COMMAND_JOIN :
-				
-				break;
-			case Command.COMMAND_MOVE :
-				
-				break;
-			}
-			PlayerHolder holder = newState.getPlayers().get(command.getPlayerId());
-			if(holder == null) {
-				//This is when a player joins...
+				Print.log(command.toString());
+				Print.log("id: " +  command.getPlayerId());
 				holder = new PlayerHolder(command.getPlayerId());
 				newState.addPlayer(holder);
+				break;
+			case Command.COMMAND_MOVE :
+				holder = newState.getPlayers().get(command.getPlayerId());
+				break;
 			}
-			command.execute(holder);
+			if(holder != null)
+				command.execute(holder);
 			commandsRun = true;
+			
+			Print.log("after commands: " + newState.toString());
 		}
 		
 		mServer.clearCommandQueue();
