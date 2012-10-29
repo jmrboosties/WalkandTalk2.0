@@ -9,10 +9,7 @@ import java.util.Map.Entry;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.jesse.game.data.Command;
 import com.jesse.game.data.GameState;
-import com.jesse.game.data.JoinCommand;
 import com.jesse.game.data.MoveCommand;
 import com.jesse.game.data.PlayerHolder;
 import com.jesse.game.objects.Vector2i;
@@ -21,8 +18,8 @@ import com.jesse.game.utils.Constants.State;
 
 public class FreeTestCkass {
 
-	private static JsonParser parser = new JsonParser();
-	private static Gson gson = new Gson();
+//	private static JsonParser parser = new JsonParser();
+//	private static Gson gson = new Gson();
 	
 	public static void main(String[] args) throws IOException, ClassNotFoundException {
 //		stupid();
@@ -33,14 +30,8 @@ public class FreeTestCkass {
 	
 	private static void timer() {
 		Vector2i vec = new Vector2i(54, 40);
-
-		vec.getGson();
-		long time = System.currentTimeMillis();
-		vec.getGson();
-		vec.getGson();
-		vec.getGson();
-		vec.getGson();
-		Print.log(System.currentTimeMillis() - time + "");
+		Vector2i to = new Vector2i(50, 40);
+		
 	}
 	
 	private static void hyoer() {
@@ -144,58 +135,7 @@ public class FreeTestCkass {
 	}
 	
 	private static void testMovement() throws IOException, ClassNotFoundException {
-		GameState state = new GameState();
-		PlayerHolder holder = new PlayerHolder(7, new Vector2i(5, 5), "jesse");
-		state.addPlayer(holder);
-		
-		Socket socket = null;
-		PrintWriter out = null;
-		BufferedReader in = null;
-		
-		try {
-			socket = new Socket("localhost", 7377);
-			out = new PrintWriter(socket.getOutputStream(), true);
-			in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-		} catch(Exception e) {
-			e.printStackTrace();
-		}
-		
-		JoinCommand join = new JoinCommand(holder);
-		out.println(join.getGson());
-		
-		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-		
-		String serverOutput;
-		Command command;
-		boolean sending = true;
-		
-		while(sending) {
-			serverOutput = in.readLine();
-			if(serverOutput != null)
-				handleGameState(state, serverOutput);
-				
-			command = takeInput(holder, reader);
-			
-			long time = System.currentTimeMillis();
-			JsonObject json = command.getGson();
-			Print.log("the data packet: " + json);
-			out.println(json);
-			Print.log(System.currentTimeMillis() - time + "");
-		}
-		
-		in.close();
-		out.close();
-		reader.close();
-		socket.close();
-	}
-	
-	private static void handleGameState(GameState clientState, String serverOutput) {
-		Print.log(serverOutput);
-		if(serverOutput.startsWith("{")) {
-			JsonObject jObject = (JsonObject) parser.parse(serverOutput);
-			GameState updateState = gson.fromJson(jObject, GameState.class);
-			clientState.update(updateState);
-		}
+		new Client().run();
 	}
 	
 	private static Vector2i calculatePosition(Vector2i position, BufferedReader reader) throws IOException {

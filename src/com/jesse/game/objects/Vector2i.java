@@ -6,6 +6,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import com.google.gson.JsonObject;
 import com.jesse.game.utils.Gsonable;
+import com.jesse.game.utils.Constants.Direction;
 
 public class Vector2i implements Comparable<Vector2i>, Serializable, Gsonable {
 
@@ -60,13 +61,34 @@ public class Vector2i implements Comparable<Vector2i>, Serializable, Gsonable {
 	
 	public boolean touching(Vector2i vector) {
 		if(this.equals(vector))
-			return true;
+			return false; //TODO trial
 		else if(Math.abs(this.x - vector.x) == 1)
 			return true;
 		else if(Math.abs(this.y - vector.y) == 1)
 			return true;
 		else
 			return false;
+	}
+	
+	public Direction getDirectionToCoordinate(Vector2i vector) {
+		if(this.equals(vector))
+			return null;
+		
+		int hor = vector.x - x;
+		if(hor > 0)
+			return Direction.RIGHT;
+		else if(hor < 0)
+			return Direction.LEFT;
+		
+		//the game doesnt operate on a standard x/y axis... 0, 0 is upper left, not center.
+		//this means going down is actually an increase in y value
+		int ver = vector.y - y;
+		if(ver > 0)
+			return Direction.DOWN;
+		else if(ver < 0)
+			return Direction.UP;
+		
+		return null;			
 	}
 
 	@Override
@@ -80,11 +102,5 @@ public class Vector2i implements Comparable<Vector2i>, Serializable, Gsonable {
 		return jo;
 	}
 	
-	public JsonObject test() {
-		JsonObject jo = new JsonObject();
-		jo.addProperty("x", x);
-		jo.addProperty("y", y);
-		return jo;
-	}
-	
+
 }

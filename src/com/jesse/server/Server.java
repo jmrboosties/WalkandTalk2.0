@@ -1,29 +1,41 @@
 package com.jesse.server;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Timer;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonParser;
 import com.jesse.game.data.Command;
 import com.jesse.game.data.GameState;
 
 public class Server {
 	
+	public Gson gson;
+	public JsonParser parser;
+	
 	private GameState mGameState;
 	private ArrayList<Command> mCommandList;
 	private ArrayList<Socket> mClientSockets;
+	private ArrayList<Socket> mNewClientSockets;
 	public boolean debugMode = false;
 	
 	public Server() {
 		mGameState = new GameState();
-//		mGameState.addPlayer(new PlayerHolder(0, new Vector2i(), "jesse"));
 		mCommandList = new ArrayList<Command>();
 		mClientSockets = new ArrayList<Socket>();
+		mNewClientSockets = new ArrayList<Socket>();
+		parser = new JsonParser();
+		gson = new Gson();
 	}
 
 	public void start() throws IOException {
+		new Thread(new InputHandler()).start();
+		
 		ServerSocket socket = new ServerSocket(7377);
 		boolean listening = true;
 
@@ -56,12 +68,46 @@ public class Server {
 		mCommandList.clear();
 	}
 	
-	public void addClientSocket(Socket socket) {
-		mClientSockets.add(socket);
-	}
-	
 	public ArrayList<Socket> getClientSockets() {
 		return mClientSockets;
+	}
+	
+	public void addNewClientSocket(Socket socket) {
+		mNewClientSockets.add(socket);
+	}
+	
+	public ArrayList<Socket> getNewClientSockets() {
+		return mNewClientSockets;
+	}
+	
+	public void dumpNewClientsIntoRegular() {
+		for (Socket socket : mNewClientSockets) {
+			mClientSockets.add(socket);
+		}
+		mNewClientSockets.clear();
+	}
+	
+	private class InputHandler implements Runnable {
+
+		@Override
+		public void run() {
+			BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+			while(true)
+				try {
+					takeInput(reader);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			
+		}
+		
+		private void takeInput(BufferedReader reader) throws IOException {
+			String entry = reader.readLine().substring(0, 1);
+			if(entry.equals("x")) {
+				System.exit(0);
+			}
+		}
+		
 	}
 	
 }

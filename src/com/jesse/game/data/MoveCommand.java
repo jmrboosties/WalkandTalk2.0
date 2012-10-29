@@ -3,7 +3,6 @@ package com.jesse.game.data;
 import com.google.gson.JsonObject;
 import com.jesse.game.utils.Constants.Direction;
 import com.jesse.game.utils.Constants.State;
-import com.jesse.game.utils.Print;
 
 public class MoveCommand extends Command {
 	
@@ -42,13 +41,12 @@ public class MoveCommand extends Command {
 			break;
 		}
 		
-		Print.log("Command result:" + player.toString());
 		player.setState(mState);
 	}
 
 	@Override
 	public String toString() {
-		return "Player id " + mPlayerId + " wants to " + mState + " to the " + mDirection;
+		return "Player " + mPlayerId + " wants to " + mState + " to the " + mDirection;
 	}
 
 	@Override
@@ -58,6 +56,7 @@ public class MoveCommand extends Command {
 		commandJson.addProperty("mDirection", mDirection.toString());
 		commandJson.addProperty("mState", mState.toString());
 		jObj.addProperty("command_type", 1);
+		jObj.addProperty("mPlayerId", mPlayerId);
 		jObj.add("command", commandJson);
 		return jObj;
 	}	

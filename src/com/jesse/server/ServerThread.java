@@ -27,27 +27,13 @@ public class ServerThread extends Thread {
 		super("ServerThread");
 		mServer = server;
 		mSocket = socket;
-		mServer.addClientSocket(socket);
+		mServer.addNewClientSocket(socket);
 	}
 	
 	public void run() {
 		try {
 			PrintWriter out = new PrintWriter(mSocket.getOutputStream(), true);
 			BufferedReader in = new BufferedReader(new InputStreamReader(mSocket.getInputStream()));
-			
-			String joinJsonString = in.readLine();
-			if(joinJsonString != null) {
-				JsonObject joinJson = (JsonObject) parser.parse(joinJsonString);
-				JsonObject commandJson = joinJson.getAsJsonObject("command");
-				Command joinCommand = gson.fromJson(commandJson, JoinCommand.class);
-				joinCommand.setPlayerId(joinJson.getAsJsonPrimitive("mPlayerId").getAsInt());
-				
-				Print.log(joinCommand.getGson().toString());
-				if(joinCommand != null)
-					mServer.addCommand(joinCommand);	
-			}
-			
-			out.println("Hey you're connected");
 			
 			String commandJsonString;
 			Command command = null;
@@ -70,6 +56,7 @@ public class ServerThread extends Thread {
 				}
 				
 				command.setCommandType(type);
+				command.setPlayerId(json.getAsJsonPrimitive("mPlayerId").getAsInt());
 				
 				if(command != null)
 					mServer.addCommand(command);

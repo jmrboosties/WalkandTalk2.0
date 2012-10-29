@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" width="32" height="18" tilewidth="16" tileheight="16">
+ <tileset firstgid="1" name="pokemon" tilewidth="16" tileheight="16">
+  <image source="pokemontileset.png" width="128" height="2613"/>
+ </tileset>
+ <tileset firstgid="1305" name="collision" tilewidth="16" tileheight="16">
+  <image source="fetch.png" width="128" height="51"/>
+ </tileset>
+ <layer name="collision" width="32" height="18">
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAAC5NkZWCQJBJTExBr56j99LGfHPdS6h9K/IbLflL0U8t+UsIEnxw2dxATZrjcT2v7CYUfKfaTC/DppYf95IKhbj85+pD1UFouUNt+XOppBYZC/NPT/wOFAVpGL3YACQAA
+  </data>
+ </layer>
+ <layer name="Tile Layer 1" width="32" height="18">
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAAC2NkYGBgJAKfJYC3EGkOuXjUfvrYHwnEUUAcPcD2o4u/RcLY7KdWOCcCcRIW/BUJ09J+XPgvEP/DE/60tp9Q/NPa/lE8ikfxKKY2BgBY/WSOAAkAAA==
+  </data>
+ </layer>
+ <layer name="collide" width="32" height="18">
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAAC73USUvDQBjG8SF6EYRat9a4tO77Ai54cvfgdrDag9u3EPHgZ9KbnjyIoLig38SjN8W/kJcOYWbstLYv/GiTNHnmSUITSqkGJAOlGtGEZrSgFSmkcafsc49LPOIBVx5SSKONjBDt6EAnupBB1pH/WmZ+IurfTUYPetGHfgxgEEMe/d/w7kH6D5MxglGMYRwTmMSUR74v6R9GpsmawWxQ2Pfrr/xr3JRA+scnj5xGnw9DvlwndKwzqX2X30t/n/k05GeQjbZlDcvcwxWsYg3rQeEcyZV12O6D7L+Ntr/wbcg3zQZ5m9jCNna0/Hh/ff36yP4nPFu8WPJ3ycthD/vIO/qXOjWOYwfkHeIIxzhx9K/EzKEe84Zj/9XfNQtYxJLhWLn9S1m3fk68/5nBueNatvfVNfo58f61Bhee1y92QlWd52/LDlVxz/8UdRVah+3/r9qfP+Nxu64ACQAA
+  </data>
+ </layer>
+ <layer name="tops" width="32" height="18">
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAAC2NgGAWjgHLADsQcNFRPDrBkYmCwAmJrILYBYlsm0t1DD3eOglFAKiAnXY6m5VGADmBpgt70YAEAd2gV7QAJAAA=
+  </data>
+ </layer>
+</map>

@@ -11,6 +11,7 @@ import com.jesse.game.data.Command;
 import com.jesse.game.data.GameState;
 import com.jesse.game.data.PlayerHolder;
 import com.jesse.game.utils.Print;
+import com.jesse.game.utils.Constants.State;
 
 public class MainServerLoop extends TimerTask {
 	
@@ -34,11 +35,11 @@ public class MainServerLoop extends TimerTask {
 			switch(command.getCommandType()) {
 			case Command.COMMAND_JOIN :
 				Print.log(command.toString());
-				Print.log("id: " +  command.getPlayerId());
 				holder = new PlayerHolder(command.getPlayerId());
 				newState.addPlayer(holder);
 				break;
 			case Command.COMMAND_MOVE :
+				Print.log(command.toString());
 				holder = newState.getPlayers().get(command.getPlayerId());
 				break;
 			}
@@ -46,7 +47,6 @@ public class MainServerLoop extends TimerTask {
 				command.execute(holder);
 			commandsRun = true;
 			
-			Print.log("after commands: " + newState.toString());
 		}
 		
 		mServer.clearCommandQueue();
@@ -57,9 +57,8 @@ public class MainServerLoop extends TimerTask {
 			} catch(Exception e) {
 				e.printStackTrace();
 			}
-		
+			
 		mServer.setState(newState);
-		
 		if(mServer.debugMode)
 			Print.log("Loop: " + mLoopCount);
 	}
@@ -90,18 +89,27 @@ public class MainServerLoop extends TimerTask {
 				playersJson.add(String.valueOf(key), jObj);
 			
 			jObj = null;
+			player.setState(State.IDLE); //TODO trial
 		}
 		
 		stateJson.add("mPlayers", playersJson);
 		
-		Print.log(newState.toString());
 		PrintWriter out;
 		for (Socket socket : mServer.getClientSockets()) {
 			out = new PrintWriter(socket.getOutputStream(), true);
 			String json = stateJson.toString();
-			Print.log(json);
+			Print.log("sending to clients: "+ json);
 			out.println(json);
 		}
+		
+		for (Socket socket : mServer.getNewClientSockets()) {
+			out = new PrintWriter(socket.getOutputStream(), true);
+			String json = mServer.gson.toJson(newState);
+			Print.log("sending to new clients: " + json);
+			out.println(json);
+		}
+		
+		mServer.dumpNewClientsIntoRegular();
 		
 	}
 
