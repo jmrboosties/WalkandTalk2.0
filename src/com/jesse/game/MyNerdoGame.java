@@ -13,7 +13,6 @@ import org.newdawn.slick.AppGameContainer;
 import org.newdawn.slick.BasicGame;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
-import org.newdawn.slick.Music;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.tiled.Layer;
 
@@ -33,7 +32,7 @@ public class MyNerdoGame extends BasicGame {
 	private TiledMapUsable mMap;
 	private Layer mCollisionLayer;
 	private UserPlayer mPlayer;
-	private Music mMusic;
+//	private Music mMusic;
 	public static Set<Vector2i> mCollisionTiles;
 	private GameState mGameState;
 	private GameState mUpdateState;
@@ -65,8 +64,10 @@ public class MyNerdoGame extends BasicGame {
 
 	@Override
 	public void init(GameContainer gc) throws SlickException {
+		gc.setTargetFrameRate(240);
+		
 		mGameState = new GameState();
-		mThisPlayer = new PlayerHolder(1, new Vector2i(17, 16), "meh");
+		mThisPlayer = new PlayerHolder(0, new Vector2i(17, 16), "meh");
 		mGameState.addPlayer(mThisPlayer);
 		mPlayers = new HashMap<Integer, PeerPlayer>();
 		

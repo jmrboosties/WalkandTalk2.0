@@ -7,6 +7,7 @@ import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Vector2f;
 import org.newdawn.slick.Color;
+import org.newdawn.slick.gui.TextField;
 import org.newdawn.slick.openal.Audio;
 import org.newdawn.slick.openal.AudioLoader;
 import org.newdawn.slick.openal.SoundStore;
@@ -18,6 +19,7 @@ public class SlickExample {
 
 	private Texture mTexture;
 	private Audio mMusic;
+	private TextField text;
 	
 	public void start() {
 		initGL(800, 600);
@@ -71,7 +73,6 @@ public class SlickExample {
 		try {
 			
 			mMusic = AudioLoader.getStreamingAudio("OGG", ResourceLoader.getResource("res/audio/music/samurai.ogg"));
-
 			mMusic.playAsMusic(1f, 1f, true);
 			
 			mTexture = TextureLoader.getTexture("JPG", ResourceLoader.getResourceAsStream("res/images/turtles.jpg"));
