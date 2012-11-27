@@ -18,10 +18,10 @@ import com.jesse.game.listeners.ConnectionStatusListener;
 import com.jesse.game.listeners.OnUpdateReceivedListener;
 import com.jesse.game.net.ServerReceiver;
 import com.jesse.game.objects.Vector2i;
+import com.jesse.game.states.GameplayState;
+import com.jesse.game.states.LoadingScreen;
+import com.jesse.game.states.SplashPage;
 import com.jesse.game.utils.Constants;
-import come.jesse.game.states.GameplayState;
-import come.jesse.game.states.LoadingScreen;
-import come.jesse.game.states.SplashPage;
 
 public class GameMain extends StateBasedGame implements ConnectionStatusListener {
 

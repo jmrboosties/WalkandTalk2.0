@@ -1,4 +1,4 @@
-package come.jesse.game.states;
+package com.jesse.game.states;
 
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;

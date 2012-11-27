@@ -1,4 +1,4 @@
-package come.jesse.game.states;
+package com.jesse.game.states;
 
 import java.awt.Font;
 
