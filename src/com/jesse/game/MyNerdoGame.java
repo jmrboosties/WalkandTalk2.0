@@ -16,7 +16,7 @@ import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.tiled.Layer;
 
-import com.jesse.game.data.GameState;
+import com.jesse.game.data.GameSnapshot;
 import com.jesse.game.data.JoinCommand;
 import com.jesse.game.data.MoveCommand;
 import com.jesse.game.data.PlayerHolder;
@@ -34,8 +34,8 @@ public class MyNerdoGame extends BasicGame {
 	private UserPlayer mPlayer;
 //	private Music mMusic;
 	public static Set<Vector2i> mCollisionTiles;
-	private GameState mGameState;
-	private GameState mUpdateState;
+	private GameSnapshot mGameState;
+	private GameSnapshot mUpdateState;
 	private PlayerHolder mThisPlayer;
 	
 	private HashMap<Integer, PeerPlayer> mPlayers;
@@ -67,7 +67,7 @@ public class MyNerdoGame extends BasicGame {
 	public void init(GameContainer gc) throws SlickException {
 		gc.setTargetFrameRate(240);
 		
-		mGameState = new GameState();
+		mGameState = new GameSnapshot();
 		mThisPlayer = new PlayerHolder(0, new Vector2i(17, 16), "meh");
 		mGameState.addPlayer(mThisPlayer);
 		mPlayers = new HashMap<Integer, PeerPlayer>();
@@ -83,7 +83,7 @@ public class MyNerdoGame extends BasicGame {
 			e.printStackTrace();
 		}
 		
-		new Thread(new ServerReceiver(in, this)).start();
+//		new Thread(new ServerReceiver(in, this)).start();
 		
 		JoinCommand join = new JoinCommand(mThisPlayer);
 		mOut.println(join.getGson());
@@ -123,7 +123,7 @@ public class MyNerdoGame extends BasicGame {
 			peer.update(delta);
 		}
 		
-		MoveCommand command = mPlayer.update(gc.getInput(), delta, mCollisionLayer);
+		MoveCommand command = mPlayer.update(gc.getInput(), delta, mCollisionTiles);
 		if(command != null)
 			new Thread(new ServerSender(mOut, command, mPlayer.getId())).start();
 	}
@@ -134,11 +134,11 @@ public class MyNerdoGame extends BasicGame {
         app.start();
 	}
 	
-	public void setUpdateState(GameState update) {
+	public void setUpdateState(GameSnapshot update) {
 		mUpdateState = update;
 	}
 	
-	public GameState getUpdateState() {
+	public GameSnapshot getUpdateState() {
 		return mUpdateState;
 	}
 	

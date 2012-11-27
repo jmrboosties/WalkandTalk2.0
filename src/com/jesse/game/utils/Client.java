@@ -10,7 +10,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.jesse.game.data.Command;
-import com.jesse.game.data.GameState;
+import com.jesse.game.data.GameSnapshot;
 import com.jesse.game.data.JoinCommand;
 import com.jesse.game.data.MoveCommand;
 import com.jesse.game.data.PlayerHolder;
@@ -20,8 +20,8 @@ import com.jesse.game.utils.Constants.State;
 
 public class Client {
 
-	private GameState mGameState;
-	private GameState mUpdateState;
+	private GameSnapshot mGameState;
+	private GameSnapshot mUpdateState;
 	
 	private PlayerHolder mThisPlayer;
 	
@@ -29,7 +29,7 @@ public class Client {
 	private Gson mGson = new Gson();
 	
 	public void run() throws IOException {
-		mGameState = new GameState();
+		mGameState = new GameSnapshot();
 		mThisPlayer = new PlayerHolder(4, new Vector2i(17, 15), "hank");
 		mGameState.addPlayer(mThisPlayer);
 		
@@ -144,7 +144,7 @@ public class Client {
 		Print.log("from server: " + serverOutput);
 		if(serverOutput.startsWith("{")) {
 			JsonObject jObject = (JsonObject) mParser.parse(serverOutput);
-			mUpdateState = mGson.fromJson(jObject, GameState.class);
+			mUpdateState = mGson.fromJson(jObject, GameSnapshot.class);
 		}
 		notifyAll();
 	}

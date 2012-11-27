@@ -9,7 +9,7 @@ import java.util.Map.Entry;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import com.jesse.game.data.GameState;
+import com.jesse.game.data.GameSnapshot;
 import com.jesse.game.data.MoveCommand;
 import com.jesse.game.data.PlayerHolder;
 import com.jesse.game.objects.Vector2i;
@@ -59,7 +59,7 @@ public class FreeTestCkass {
 		PlayerHolder jon = new PlayerHolder(54, new Vector2i(3,4), "im ga");
 		PlayerHolder hoder = new PlayerHolder(26, new Vector2i(60,4), "gof");
 		
-		GameState oldState = new GameState();
+		GameSnapshot oldState = new GameSnapshot();
 		oldState.addPlayer(holder);
 		oldState.addPlayer(hoder);
 		
@@ -67,7 +67,7 @@ public class FreeTestCkass {
 		gson.toJson(oldState);
 		new JsonObject().addProperty("a", "a");
 		
-		GameState newState = oldState.next();
+		GameSnapshot newState = oldState.next();
 		newState.getPlayers().get(56).coordinates.x++;
 		newState.addPlayer(original);
 		newState.addPlayer(jon);
@@ -113,7 +113,7 @@ public class FreeTestCkass {
 		PlayerHolder original = new PlayerHolder(0, new Vector2i(3, 5), "lone fucking behold");
 		PlayerHolder holder = new PlayerHolder(56, new Vector2i(3,4), "im gay");
 
-		GameState state = new GameState();
+		GameSnapshot state = new GameSnapshot();
 		state.addPlayer(holder);
 		state.addPlayer(original);
 		

@@ -6,29 +6,32 @@ import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Timer;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonParser;
 import com.jesse.game.data.Command;
-import com.jesse.game.data.GameState;
+import com.jesse.game.data.GameSnapshot;
 
 public class Server {
 	
 	public Gson gson;
 	public JsonParser parser;
 	
-	private GameState mGameState;
+	private GameSnapshot mGameState;
+	private HashMap<Integer, String> mMessageQueue;
 	private ArrayList<Command> mCommandList;
 	private ArrayList<Socket> mClientSockets;
 	private ArrayList<Socket> mNewClientSockets;
 	public boolean debugMode = false;
 	
 	public Server() {
-		mGameState = new GameState();
+		mGameState = new GameSnapshot();
 		mCommandList = new ArrayList<Command>();
 		mClientSockets = new ArrayList<Socket>();
 		mNewClientSockets = new ArrayList<Socket>();
+		mMessageQueue = new HashMap<Integer, String>();
 		parser = new JsonParser();
 		gson = new Gson();
 	}
@@ -48,11 +51,11 @@ public class Server {
 		socket.close();
 	}
 	
-	public GameState getState() {
+	public GameSnapshot getState() {
 		return mGameState;
 	}
 	
-	public void setState(GameState state) {
+	public void setState(GameSnapshot state) {
 		mGameState = state;
 	}
 	
@@ -85,6 +88,18 @@ public class Server {
 			mClientSockets.add(socket);
 		}
 		mNewClientSockets.clear();
+	}
+	
+	public void addMessageToQueue(int playerId, String message) {
+		mMessageQueue.put(playerId, message);
+	}
+	
+	public HashMap<Integer, String> getMessageQueue() {
+		return mMessageQueue;
+	}
+	
+	public void clearMessageQueue() {
+		mMessageQueue.clear();
 	}
 	
 	private class InputHandler implements Runnable {

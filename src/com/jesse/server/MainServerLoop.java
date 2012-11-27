@@ -3,12 +3,14 @@ package com.jesse.server;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.HashMap;
 import java.util.TimerTask;
 import java.util.Map.Entry;
 
 import com.google.gson.JsonObject;
 import com.jesse.game.data.Command;
-import com.jesse.game.data.GameState;
+import com.jesse.game.data.GameSnapshot;
+import com.jesse.game.data.MessageCommand;
 import com.jesse.game.data.PlayerHolder;
 import com.jesse.game.utils.Print;
 import com.jesse.game.utils.Constants.State;
@@ -26,27 +28,31 @@ public class MainServerLoop extends TimerTask {
 	public void run() {
 		mLoopCount++;
 		
-		GameState currentState = mServer.getState();
-		GameState newState = currentState.next();
+		GameSnapshot currentState = mServer.getState();
+		GameSnapshot newState = currentState.next();
 		
 		boolean commandsRun = false;
 		PlayerHolder holder = null;
 		for (Command command : mServer.getCommandQueue()) {
+			Print.log(command.toString());
 			switch(command.getCommandType()) {
 			case Command.COMMAND_JOIN :
-				Print.log(command.toString());
 				holder = new PlayerHolder(command.getPlayerId());
 				newState.addPlayer(holder);
 				break;
 			case Command.COMMAND_MOVE :
-				Print.log(command.toString());
 				holder = newState.getPlayers().get(command.getPlayerId());
+				break;
+			case Command.COMMAND_MESSAGE :
+				MessageCommand msgCommand = (MessageCommand)command;
+				mServer.addMessageToQueue(msgCommand.getPlayerId(), msgCommand.getMessage());
+				holder = null;
 				break;
 			}
 			if(holder != null)
 				command.execute(holder);
-			commandsRun = true;
 			
+			commandsRun = true;
 		}
 		
 		mServer.clearCommandQueue();
@@ -63,53 +69,67 @@ public class MainServerLoop extends TimerTask {
 			Print.log("Loop: " + mLoopCount);
 	}
 	
-	private void publishStateToClients(GameState newState, GameState oldState) throws IOException {
-		if(newState.equals(oldState))
-			return;
+	private void publishStateToClients(GameSnapshot newState, GameSnapshot oldState) throws IOException {
+
+		JsonObject stateJson = null;
 		
-		JsonObject stateJson = new JsonObject();
-		JsonObject playersJson = new JsonObject();
-		
-		JsonObject jObj = null;
-		PlayerHolder player;
-		int key;
-		for (Entry<Integer, PlayerHolder> entry : newState.getPlayers().entrySet()) {
-			key = entry.getKey();
-			player = entry.getValue();
-			if(!oldState.getPlayers().containsKey(key)) {
-				jObj = player.getGson();
-			}
-			else if(!player.equals(oldState.getPlayers().get(key))) {
-				if(!player.coordinates.equals(oldState.getPlayers().get(key).coordinates)) {
-					jObj = player.getGson(true, false, true, false);
+		if(!newState.equals(oldState)) {
+			stateJson = new JsonObject();
+			JsonObject playersJson = new JsonObject();
+			
+			JsonObject jObj = null;
+			PlayerHolder player;
+			int key;
+			for (Entry<Integer, PlayerHolder> entry : newState.getPlayers().entrySet()) {
+				key = entry.getKey();
+				player = entry.getValue();
+				if(!oldState.getPlayers().containsKey(key)) {
+					jObj = player.getGson();
 				}
+				else if(!player.equals(oldState.getPlayers().get(key))) {
+					if(!player.coordinates.equals(oldState.getPlayers().get(key).coordinates)) {
+						jObj = player.getGson(true, false, true, false);
+					}
+				}
+				
+				if(jObj != null)
+					playersJson.add(String.valueOf(key), jObj);
+				
+				jObj = null;
+				player.setState(State.IDLE);
 			}
 			
-			if(jObj != null)
-				playersJson.add(String.valueOf(key), jObj);
-			
-			jObj = null;
-			player.setState(State.IDLE); //TODO trial
+			stateJson.add("mPlayers", playersJson);
 		}
-		
-		stateJson.add("mPlayers", playersJson);
 		
 		PrintWriter out;
+		JsonObject jContainer = new JsonObject();
+		
+		jContainer.add("messages", mServer.gson.toJsonTree(mServer.getMessageQueue(), HashMap.class));
+		
+		if(stateJson != null) {
+			String json = stateJson.toString();
+			jContainer.add("snapshot", mServer.parser.parse(json));
+		}
+
+		Print.log("sending to clients: " + jContainer.toString());
 		for (Socket socket : mServer.getClientSockets()) {
 			out = new PrintWriter(socket.getOutputStream(), true);
-			String json = stateJson.toString();
-			Print.log("sending to clients: "+ json);
-			out.println(json);
+			out.println(jContainer.toString());
 		}
 		
-		for (Socket socket : mServer.getNewClientSockets()) {
-			out = new PrintWriter(socket.getOutputStream(), true);
-			String json = mServer.gson.toJson(newState);
-			Print.log("sending to new clients: " + json);
-			out.println(json);
+		if(mServer.getNewClientSockets().size() > 0) {
+			String newJson = mServer.gson.toJson(newState);
+			newJson = "{\"joined\":true,".concat(newJson.substring(1));
+			Print.log("sending to new clients: " + newJson);
+			for (Socket socket : mServer.getNewClientSockets()) {
+				out = new PrintWriter(socket.getOutputStream(), true);
+				
+				out.println(newJson);
+			}
+
+			mServer.dumpNewClientsIntoRegular();
 		}
-		
-		mServer.dumpNewClientsIntoRegular();
 		
 	}
 

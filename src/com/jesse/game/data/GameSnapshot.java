@@ -11,13 +11,13 @@ import com.google.gson.JsonObject;
 import com.jesse.game.utils.Gsonable;
 import com.jesse.game.utils.Print;
 
-public class GameState implements Serializable, Gsonable {
+public class GameSnapshot implements Serializable, Gsonable {
 
 	private static final long serialVersionUID = 1L;
 	
 	private HashMap<Integer, PlayerHolder> mPlayers;
 	
-	public GameState() {
+	public GameSnapshot() {
 		mPlayers = new HashMap<Integer, PlayerHolder>();
 	}
 		
@@ -25,8 +25,8 @@ public class GameState implements Serializable, Gsonable {
 		return mPlayers;
 	}
 	
-	public GameState next() {
-		GameState newState = new GameState();
+	public GameSnapshot next() {
+		GameSnapshot newState = new GameSnapshot();
 		
 		for (Entry<Integer, PlayerHolder> entry : mPlayers.entrySet())
 			newState.getPlayers().put(Integer.valueOf(entry.getKey()), new PlayerHolder(entry.getValue()));
@@ -51,7 +51,7 @@ public class GameState implements Serializable, Gsonable {
 	
 	public boolean equals(Object o) {
 		try {
-			GameState compared = (GameState) o;
+			GameSnapshot compared = (GameSnapshot) o;
 			if(mPlayers.equals(compared.getPlayers()))
 				return true;
 			else
@@ -73,7 +73,7 @@ public class GameState implements Serializable, Gsonable {
 		return null;
 	}
 	
-	public void update(GameState updateState) {
+	public void update(GameSnapshot updateState) {
 		int key;
 		PlayerHolder player;
 		for (Entry<Integer, PlayerHolder> entry : updateState.getPlayers().entrySet()) {

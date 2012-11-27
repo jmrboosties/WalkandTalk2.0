@@ -13,7 +13,7 @@ public abstract class Player {
 	public Vector2i coordinates;
 	public Vector2f drawnCoordinates;
 	protected String mName;
-	protected int mId;
+	protected int mId = -1;
 
 	protected SpriteSheet mSpriteSheet;
 	
@@ -41,8 +41,18 @@ public abstract class Player {
 	public Player(String name, Vector2i coordinates, int id) throws SlickException {
 		mId = id;
 		this.mName = name;
-		this.coordinates = new Vector2i(coordinates.x, coordinates.y);
+//		if(coordinates != null) {
+			this.coordinates = new Vector2i(coordinates);
+			this.drawnCoordinates = new Vector2f(coordinates.x, coordinates.y);			
+	}
+	
+	public void loadCoordinates(Vector2i coordinates) {
+		this.coordinates = new Vector2i(coordinates);
 		this.drawnCoordinates = new Vector2f(coordinates.x, coordinates.y);
+	}
+	
+	public void setName(String name) {
+		mName = name;
 	}
 	
 	public void draw() {
@@ -63,6 +73,10 @@ public abstract class Player {
 	
 	public int getId() {
 		return mId;
+	}
+	
+	public void setId(int id) {
+		mId = id;
 	}
 	
 	protected void updateDraw(int delta) {

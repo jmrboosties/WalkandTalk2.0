@@ -1,11 +1,11 @@
 package com.jesse.game.drawables;
 
+import java.util.Set;
+
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.SpriteSheet;
-import org.newdawn.slick.tiled.Layer;
 
-import com.jesse.game.MyNerdoGame;
 import com.jesse.game.data.MoveCommand;
 import com.jesse.game.objects.Vector2i;
 import com.jesse.game.utils.Constants.Direction;
@@ -13,6 +13,10 @@ import com.jesse.game.utils.Constants.State;
 
 public class UserPlayer extends Player {
 
+//	public UserPlayer() throws SlickException {
+//		this(null, null, -1);
+//	}
+	
 	public UserPlayer(String name, int id) throws SlickException {
 		super(name, id);
 	}
@@ -22,7 +26,7 @@ public class UserPlayer extends Player {
 		mSpriteSheet = new SpriteSheet("res/spritesheets/karatemansheet.png", CharacterWidth, CharacterHeight);
 	}
 
-	public MoveCommand update(Input input, int delta, Layer layer) {
+	public MoveCommand update(Input input, int delta, Set<Vector2i> layer) {
 		MoveCommand command = null;
 		if(input.isKeyDown(Input.KEY_W))
 			command = startMovement(Direction.UP, input.isKeyDown(Input.KEY_LSHIFT), layer);
@@ -38,13 +42,13 @@ public class UserPlayer extends Player {
 		return command;
 	}
 	
-	protected MoveCommand startMovement(Direction direction, boolean running, Layer layer) {
+	protected MoveCommand startMovement(Direction direction, boolean running, Set<Vector2i> tiles) {
 		if(mMoveProgress >= 0)
 			return null;
 				
 		mFacing = direction;
 		
-		Vector2i newPos = collisionCheck(mFacing, layer);
+		Vector2i newPos = collisionCheck(mFacing, tiles);
 		if(newPos == null)
 			return null;
 		
@@ -59,7 +63,7 @@ public class UserPlayer extends Player {
 		return new MoveCommand(direction, mState, mId);
 	}
 	
-	private Vector2i collisionCheck(Direction direction, Layer layer) {
+	private Vector2i collisionCheck(Direction direction, Set<Vector2i> tiles) {
 		Vector2i newPostion = new Vector2i(coordinates);
 		switch(mFacing) {
 		case UP :
@@ -82,10 +86,14 @@ public class UserPlayer extends Player {
 //		
 //		int tileId = layer.getTileID((int)newPostion.x, (int)newPostion.y);
 //		if(tileId != 0)
-		if(MyNerdoGame.mCollisionTiles.contains(newPostion))
+		if(tiles.contains(newPostion))
 			return null;
 		else
 			return newPostion;
 	}
+	
+//	public boolean isInitialized() {
+//		return mName != null && mId >= 0 && coordinates != null && drawnCoordinates != null;
+//	}
 	
 }

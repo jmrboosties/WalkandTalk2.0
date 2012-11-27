@@ -12,6 +12,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.jesse.game.data.Command;
 import com.jesse.game.data.JoinCommand;
+import com.jesse.game.data.MessageCommand;
 import com.jesse.game.data.MoveCommand;
 import com.jesse.game.utils.Print;
 
@@ -52,6 +53,9 @@ public class ServerThread extends Thread {
 					break;
 				case Command.COMMAND_MOVE :
 					command = gson.fromJson(commandJson, MoveCommand.class);
+					break;
+				case Command.COMMAND_MESSAGE :
+					command = gson.fromJson(commandJson, MessageCommand.class);
 					break;
 				}
 				
