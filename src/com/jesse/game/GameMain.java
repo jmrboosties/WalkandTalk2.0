@@ -81,19 +81,19 @@ public class GameMain extends StateBasedGame implements ConnectionStatusListener
 		}
 	}
 	
-	public void connectToServer() {
+	public void connectToServer(String ip) {
 		long time = System.currentTimeMillis();
 //		enterState(Constants.LOADING_STATE_ID);
 		
 		mGameSnapshot = new GameSnapshot();
-		mThisPlayer = new PlayerHolder(0, new Vector2i(17, 16), "moo");
+		mThisPlayer = new PlayerHolder(0, new Vector2i(17, 16), "Jesse");
 		mGameSnapshot.addPlayer(mThisPlayer);
 		
 		Socket socket = null;
 		BufferedReader in = null;
 		
 		try {
-			socket = new Socket("localhost", 7377);
+			socket = new Socket(ip, 7377);
 			outWriter = new PrintWriter(socket.getOutputStream(), true);
 			in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 		} catch(Exception e) {

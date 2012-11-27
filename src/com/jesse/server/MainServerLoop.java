@@ -106,6 +106,7 @@ public class MainServerLoop extends TimerTask {
 		JsonObject jContainer = new JsonObject();
 		
 		jContainer.add("messages", mServer.gson.toJsonTree(mServer.getMessageQueue(), HashMap.class));
+		mServer.clearMessageQueue();
 		
 		if(stateJson != null) {
 			String json = stateJson.toString();

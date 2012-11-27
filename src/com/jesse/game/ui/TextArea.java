@@ -1,4 +1,4 @@
-package com.jesse.game.drawables;
+package com.jesse.game.ui;
 
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Font;
@@ -6,8 +6,6 @@ import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.TrueTypeFont;
 import org.newdawn.slick.geom.Rectangle;
-
-import com.jesse.game.utils.Print;
 
 @SuppressWarnings("deprecation")
 public class TextArea {
@@ -20,7 +18,7 @@ public class TextArea {
 	private Color mBackgroundColor;
 	private Color mTextColor = Color.white;
 	
-	private String mText = "Welcome to chat.";
+	private String mText = "";
 	private TrueTypeFont mFont;
 	
 	public TextArea(float x, float y, int width, int height) {
@@ -33,26 +31,22 @@ public class TextArea {
 	}
 	
 	public void addText(String text) {
-		Print.log("the text to enter: " + text);
-		
-		if(mFont.getWidth(text) < mWidth) {
-			mText += "\n" + text;
-			Print.log("added text normally");
-		}
+		if(mFont.getWidth(text) < mWidth)
+			if(mText.length() == 0)
+				mText += text;
+			else
+				mText += "\n" + text;
 		else {
 			StringBuilder builder = new StringBuilder();
 			fittingLoop(builder, text);
 			mText += builder;
 		}
-		
-		Print.log("total text: " + mText + " :end");
 	}
 	
 	private void fittingLoop(StringBuilder builder, String originalText) {
 		String currentLineText = originalText;
 		String nextLineText = "";
 		while(mFont.getWidth(currentLineText) >= mWidth) {
-			Print.log("attempt to shrink: " + currentLineText);
 			String[] words = currentLineText.split(" ");
 			nextLineText = words[words.length - 1] + " " + nextLineText;
 			
@@ -64,11 +58,10 @@ public class TextArea {
 			}
 		}
 				
-		Print.log("current line: " + currentLineText);
-		Print.log("next line: " + nextLineText);
-		
-		builder.append("\n" + currentLineText);
-		Print.log("builder content: " + builder.toString());
+		if(builder.toString().length() == 0)
+			builder.append(currentLineText);
+		else
+			builder.append("\n" + currentLineText);
 		
 		if(nextLineText.length() > 0)
 			fittingLoop(builder, nextLineText);
@@ -78,21 +71,16 @@ public class TextArea {
 		mBackgroundColor = color;
 	}
 	
-	public void render(GameContainer container, Graphics grfx, boolean chatOpen) {
+	public void render(GameContainer container, Graphics grfx, boolean drawBackground) {
 		Color color = grfx.getColor();
 		Font font = grfx.getFont();
+		Rectangle oldClip = grfx.getClip();
 		
-		if(chatOpen) {
-			Rectangle oldClip = grfx.getClip();
-			grfx.setWorldClip(mOriginX, mOriginY, mWidth, mHeight);
-
-			if (mBackgroundColor != null) {
-				grfx.setColor(mBackgroundColor.multiply(color));
-				grfx.fillRect(mOriginX, mOriginY, mWidth, mHeight);
-			}
-			
-			grfx.clearWorldClip();
-			grfx.setClip(oldClip);
+		grfx.setWorldClip(mOriginX, mOriginY, mWidth, mHeight);
+		
+		if(drawBackground && mBackgroundColor != null) {
+			grfx.setColor(mBackgroundColor.multiply(color));
+			grfx.fillRect(mOriginX, mOriginY, mWidth, mHeight);
 		}
 		
 		int verticalOffset = mHeight - mText.split("\n").length * grfx.getFont().getLineHeight();
@@ -102,6 +90,8 @@ public class TextArea {
 		grfx.setColor(mTextColor.multiply(color));
 		grfx.drawString(mText, mOriginX + 2, mOriginY + verticalOffset);
 		
+		grfx.clearWorldClip();
+		grfx.setClip(oldClip);
 		grfx.setColor(color);
 		grfx.setFont(font);
 	}

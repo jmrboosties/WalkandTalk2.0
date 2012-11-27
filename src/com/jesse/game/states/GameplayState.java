@@ -21,13 +21,14 @@ import com.jesse.game.data.GameSnapshot;
 import com.jesse.game.data.MessageCommand;
 import com.jesse.game.data.MoveCommand;
 import com.jesse.game.data.PlayerHolder;
-import com.jesse.game.drawables.Chatbox;
 import com.jesse.game.drawables.PeerPlayer;
 import com.jesse.game.drawables.UserPlayer;
 import com.jesse.game.listeners.OnUpdateReceivedListener;
 import com.jesse.game.net.ServerSender;
 import com.jesse.game.objects.Vector2i;
 import com.jesse.game.tiled.TiledMapUsable;
+import com.jesse.game.ui.Chatbox;
+import com.jesse.game.utils.Print;
 
 public class GameplayState extends BasicGameState implements OnUpdateReceivedListener {
 
@@ -96,7 +97,7 @@ public class GameplayState extends BasicGameState implements OnUpdateReceivedLis
 		mMap.render(0, 0, 3);
 		
 		grfx.scale(.5f, .5f);
-		mChatBox.draw(gc, grfx);
+		mChatBox.render(gc, grfx);
 		
 	}
 
@@ -125,6 +126,7 @@ public class GameplayState extends BasicGameState implements OnUpdateReceivedLis
 		String textMsg = mChatBox.getTextForMessage();
 		if(textMsg != null && textMsg.length() > 0) {
 			MessageCommand msgCommand = new MessageCommand(mUserPlayer.getId(), textMsg);
+			Print.log("sending command: " + msgCommand.toString());
 			new Thread(new ServerSender(mGame.outWriter, msgCommand, mUserPlayer.getId())).start();
 		}
 	}

@@ -14,9 +14,12 @@ import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
 
 import com.jesse.game.GameMain;
+import com.jesse.game.listeners.OnEnterPressedListener;
+import com.jesse.game.ui.EntryPopup;
+import com.jesse.game.utils.Print;
 
 @SuppressWarnings("deprecation")
-public class SplashPage extends BasicGameState {
+public class SplashPage extends BasicGameState implements OnEnterPressedListener {
 	
 	private int mId;
 	private Image mLogo;
@@ -25,8 +28,11 @@ public class SplashPage extends BasicGameState {
 	
 	private TextField mStart;
 	private TextField mExit;
+	private EntryPopup mServerSelectionPopup;
 	
 	private int mSelectedOption;
+	
+	private int mPressedKey = -1;
 	
 	private static final int START = 0;
 	private static final int EXIT = 1;
@@ -45,6 +51,13 @@ public class SplashPage extends BasicGameState {
 		mExit = new TextField(gc, new TrueTypeFont(new Font("Arial", Font.BOLD, 30), true), 
 				GameMain.SCREEN_WIDTH * 2 / 3, (int) (GameMain.SCREEN_HEIGHT / 1.25), 100, 100);
 		
+		mServerSelectionPopup = new EntryPopup(gc, 
+				GameMain.SCREEN_WIDTH * 3 / 8, GameMain.SCREEN_HEIGHT * 3 / 8, 
+				GameMain.SCREEN_WIDTH / 4, GameMain.SCREEN_HEIGHT / 4);
+		
+		mServerSelectionPopup.setText("Enter server IP");
+		mServerSelectionPopup.setOnEnterPressedListener(this);
+		
 		mStart.setBackgroundColor(null);
 		mStart.setBorderColor(null);
 		mExit.setBackgroundColor(null);
@@ -57,50 +70,6 @@ public class SplashPage extends BasicGameState {
 		
 	}
 	
-//	@Override
-//	protected RootPane createRootPane() {
-//		RootPane rp = super.createRootPane();
-//		rp.setTheme("theme");
-//
-//		mStart = new Button("Start");
-//		mStart.addCallback(new Runnable() {
-//			
-//			@Override
-//			public void run() {
-//				mGame.connectToServer();
-//			}
-//		});
-//		
-//		mExit = new Button("Exit");
-//		mExit.addCallback(new Runnable() {
-//			
-//			@Override
-//			public void run() {
-////				System.exit(0);
-//				mPopup.openPopupCentered();
-//			}
-//		});
-//		
-////		mPopup = new PopupWindow(rp);
-////		Button gay = new Button("gay");
-////		mPopup.add(gay);
-//		
-//		rp.add(mStart);
-//		rp.add(mExit);
-////		rp.add(mPopup);
-//		createPopupWindow(rp);
-//		return rp;
-//	}
-//	
-//	@Override
-//	public void layoutRootPane() {
-//		mStart.adjustSize();
-//		mExit.adjustSize();
-//		
-//		mStart.setPosition(GameMain.SCREEN_WIDTH / 3, (int) (GameMain.SCREEN_HEIGHT * 4 / 5));
-//		mExit.setPosition(GameMain.SCREEN_WIDTH * 2 / 3, (int) (GameMain.SCREEN_HEIGHT * 4 / 5));
-//	}
-
 	@Override
 	public void render(GameContainer gc, StateBasedGame game, Graphics grfx) throws SlickException {
 		grfx.scale(GameMain.SCALE, GameMain.SCALE);
@@ -109,11 +78,12 @@ public class SplashPage extends BasicGameState {
 		grfx.scale(.5f, .5f);
 		mStart.render(gc, grfx);
 		mExit.render(gc, grfx);
+		mServerSelectionPopup.render(gc, grfx);
 	}
 
 	@Override
 	public void update(GameContainer gc, StateBasedGame game, int delta) throws SlickException {
-		
+			
 		if(gc.getInput().isKeyDown(Keyboard.KEY_A)) {
 			setChoice(START);
 		}
@@ -121,11 +91,26 @@ public class SplashPage extends BasicGameState {
 			setChoice(EXIT);
 		}
 		else if(gc.getInput().isKeyDown(Keyboard.KEY_RETURN)) {
-			if(mSelectedOption == EXIT)
+			if(mPressedKey == Keyboard.KEY_RETURN)
+				return;
+			
+			mPressedKey = Keyboard.KEY_RETURN;
+			if(mServerSelectionPopup.textEntryHasFocus() && mServerSelectionPopup.getEntryText().length() > 0)
+				mServerSelectionPopup.enterPressed();
+			else if(mSelectedOption == EXIT)
 				System.exit(0);
 			else if(mSelectedOption == START) {
-				mGame.connectToServer();
+				mServerSelectionPopup.launch();
+//				mGame.connectToServer();
 			}
+		}
+		else if(gc.getInput().isKeyDown(Keyboard.KEY_ESCAPE)) {
+			if(mServerSelectionPopup.isVisible())
+				mServerSelectionPopup.setVisibility(false);
+		}
+		
+		if(!gc.getInput().isKeyDown(Keyboard.KEY_RETURN)) {
+			mPressedKey = -1;
 		}
 	}
 
@@ -151,49 +136,11 @@ public class SplashPage extends BasicGameState {
 		
 		mSelectedOption = choice;
 	}
-	
-//	public void createPopupWindow(RootPane rp){
-//	      
-//        DialogLayout dialog = new DialogLayout();
-//        
-//        Button btnOK = new Button("Yes");
-//        btnOK.setTheme("button");
-//        btnOK.addCallback(new Runnable() {
-//            public void run() {
-//            	System.exit(0);
-//            }
-//        });
-//        
-//        Button btnNo = new Button("No");
-//        btnNo.setTheme("button");
-//        btnNo.addCallback(new Runnable() {
-//            public void run() {
-//            	mPopup.closePopup();
-//            }
-//        });
-//        
-//        Label loadQuestion = new Label();
-//        loadQuestion.setText("Are you sure you want to quit?");
-//        
-//        DialogLayout.Group popupLabelH = dialog.createSequentialGroup(loadQuestion);
-//        DialogLayout.Group popupBoxH = dialog.createSequentialGroup()
-//              .addGap()
-//              .addWidget(btnOK)
-//              .addGap(20)
-//              .addWidget(btnNo)
-//              .addGap(); 
-//        
-//        DialogLayout.Group popupLabelV = dialog.createParallelGroup(loadQuestion);
-//        DialogLayout.Group popupBoxV = dialog.createParallelGroup(btnOK, btnNo); 
-//        
-//        dialog.setHorizontalGroup(dialog.createParallelGroup(popupLabelH, popupBoxH));
-//        dialog.setVerticalGroup(dialog.createSequentialGroup(popupLabelV, popupBoxV));
-//        
-//        mPopup = new PopupWindow(rp);
-//        mPopup.setTheme("popupmenu");
-//        mPopup.add(new ResizableFrame());
-//        mPopup.add(dialog);
-//        
-//   }
 
+	@Override
+	public boolean onEnterPressed(String text) {
+		mGame.connectToServer(text);
+		return true;
+	}
+	
 }
