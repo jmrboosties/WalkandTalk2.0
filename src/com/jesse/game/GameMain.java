@@ -86,7 +86,7 @@ public class GameMain extends StateBasedGame implements ConnectionStatusListener
 //		enterState(Constants.LOADING_STATE_ID);
 		
 		mGameSnapshot = new GameSnapshot();
-		mThisPlayer = new PlayerHolder(0, new Vector2i(17, 16), "Jesse");
+		mThisPlayer = new PlayerHolder(0, new Vector2i(17, 16), "Hank P");
 		mGameSnapshot.addPlayer(mThisPlayer);
 		
 		Socket socket = null;
@@ -109,7 +109,7 @@ public class GameMain extends StateBasedGame implements ConnectionStatusListener
 		outWriter.println(join.getGson());
 		try {
 			thread.join();
-			while(System.currentTimeMillis() - time < 3000l) { }
+			while(System.currentTimeMillis() - time < 100l) { }
 			onJoined();
 		} catch (InterruptedException e) {
 			e.printStackTrace();

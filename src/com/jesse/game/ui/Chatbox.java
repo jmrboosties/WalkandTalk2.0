@@ -20,7 +20,8 @@ public class Chatbox extends UIElement {
 		mEntryField = new TextField(gc, new TrueTypeFont(new Font("Arial", Font.BOLD, 20), true), 
 				(int)(mBackground.getMinX() + 6), (int)(mBackground.getMaxY() - 28), mWidth - 12, 24);
 		
-		mChatHistory = new TextArea(mOriginX + 6, mOriginY + 4, mWidth - 12, mHeight - 36);
+		mChatHistory = new TextArea(gc, mOriginX + 6, mOriginY + 4, mWidth - 12, /*mHeight - 36*/gc.getGraphics().getFont().getLineHeight() * 5);
+//		mChatHistory.setHeightToTextLines(5);
 		
 		mEntryField.setBackgroundColor(Color.gray.brighter());
 		mChatHistory.setBackgroundColor(Color.gray.brighter());

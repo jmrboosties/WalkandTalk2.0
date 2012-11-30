@@ -9,7 +9,6 @@ import org.newdawn.slick.TrueTypeFont;
 import org.newdawn.slick.gui.TextField;
 
 import com.jesse.game.listeners.OnEnterPressedListener;
-import com.jesse.game.utils.Print;
 
 @SuppressWarnings("deprecation")
 public class EntryPopup extends UIElement {
@@ -28,7 +27,7 @@ public class EntryPopup extends UIElement {
 		mEntryField.setBackgroundColor(Color.gray.brighter());
 		mEntryField.setBorderColor(null);
 		
-		mCaption = new TextArea(mOriginX + 6, mOriginY + 4, mWidth - 12, mHeight - 36);
+		mCaption = new TextArea(gc, mOriginX + 6, mOriginY + 4, mWidth - 12, mHeight - 36);
 		mCaption.setBackgroundColor(null);
 	}
 

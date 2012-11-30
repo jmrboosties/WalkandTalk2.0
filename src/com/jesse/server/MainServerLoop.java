@@ -121,12 +121,15 @@ public class MainServerLoop extends TimerTask {
 		
 		if(mServer.getNewClientSockets().size() > 0) {
 			String newJson = mServer.gson.toJson(newState);
-			newJson = "{\"joined\":true,".concat(newJson.substring(1));
-			Print.log("sending to new clients: " + newJson);
+			JsonObject newPlayersContainer = new JsonObject();
+			newPlayersContainer.addProperty("joined", true);
+			newPlayersContainer.add("snapshot", mServer.parser.parse(newJson));
+//			newJson = "{\"joined\":true,".concat(newJson.substring(1));
+			Print.log("sending to new clients: " + newPlayersContainer.toString());
 			for (Socket socket : mServer.getNewClientSockets()) {
 				out = new PrintWriter(socket.getOutputStream(), true);
 				
-				out.println(newJson);
+				out.println(newPlayersContainer.toString());
 			}
 
 			mServer.dumpNewClientsIntoRegular();

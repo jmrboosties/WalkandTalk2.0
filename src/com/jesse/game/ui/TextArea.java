@@ -4,10 +4,9 @@ import org.newdawn.slick.Color;
 import org.newdawn.slick.Font;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
-import org.newdawn.slick.TrueTypeFont;
 import org.newdawn.slick.geom.Rectangle;
 
-@SuppressWarnings("deprecation")
+//@SuppressWarnings("deprecation")
 public class TextArea {
 
 	private float mOriginX;
@@ -19,15 +18,17 @@ public class TextArea {
 	private Color mTextColor = Color.white;
 	
 	private String mText = "";
-	private TrueTypeFont mFont;
+//	private TrueTypeFont mFont;
+	private Font mFont;
 	
-	public TextArea(float x, float y, int width, int height) {
+	public TextArea(GameContainer gc, float x, float y, int width, int height) {
 		mOriginX = x;
 		mOriginY = y;
 		mWidth = width;
 		mHeight = height;
 		
-		mFont = new TrueTypeFont(new java.awt.Font("Arial", java.awt.Font.BOLD, 14), true);
+//		mFont = new TrueTypeFont(new java.awt.Font("Arial", java.awt.Font.BOLD, 12), true);
+		mFont = gc.getGraphics().getFont();
 	}
 	
 	public void addText(String text) {
@@ -58,9 +59,9 @@ public class TextArea {
 			}
 		}
 				
-		if(builder.toString().length() == 0)
-			builder.append(currentLineText);
-		else
+//		if(builder.toString().length() == 0)
+//			builder.append(currentLineText);
+//		else
 			builder.append("\n" + currentLineText);
 		
 		if(nextLineText.length() > 0)
@@ -69,6 +70,11 @@ public class TextArea {
 	
 	public void setBackgroundColor(Color color) {
 		mBackgroundColor = color;
+	}
+	
+	public void setHeightToTextLines(int lines) {
+		
+		mHeight = mFont.getLineHeight() * lines;
 	}
 	
 	public void render(GameContainer container, Graphics grfx, boolean drawBackground) {
