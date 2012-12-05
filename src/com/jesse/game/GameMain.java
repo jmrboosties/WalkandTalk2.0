@@ -86,7 +86,7 @@ public class GameMain extends StateBasedGame implements ConnectionStatusListener
 //		enterState(Constants.LOADING_STATE_ID);
 		
 		mGameSnapshot = new GameSnapshot();
-		mThisPlayer = new PlayerHolder(0, new Vector2i(17, 16), "Hank P");
+		mThisPlayer = new PlayerHolder(0, new Vector2i(17, 16), "Onree");
 		mGameSnapshot.addPlayer(mThisPlayer);
 		
 		Socket socket = null;

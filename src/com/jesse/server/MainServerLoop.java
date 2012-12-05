@@ -48,9 +48,18 @@ public class MainServerLoop extends TimerTask {
 				mServer.addMessageToQueue(msgCommand.getPlayerId(), msgCommand.getMessage());
 				holder = null;
 				break;
+			case Command.COMMAND_LEAVE :
+				//TODO add null or something so clients know theyre gone
+				newState.getPlayers().remove(command.getPlayerId());
+				holder = null;
+				break;
 			}
+			
 			if(holder != null)
 				command.execute(holder);
+			
+			if(command.getCommandType() == Command.COMMAND_JOIN)
+				mServer.transferPlayer(holder);
 			
 			commandsRun = true;
 		}
@@ -68,7 +77,7 @@ public class MainServerLoop extends TimerTask {
 		if(mServer.debugMode)
 			Print.log("Loop: " + mLoopCount);
 	}
-	
+
 	private void publishStateToClients(GameSnapshot newState, GameSnapshot oldState) throws IOException {
 
 		JsonObject stateJson = null;

@@ -79,14 +79,24 @@ public class GameSnapshot implements Serializable, Gsonable {
 		for (Entry<Integer, PlayerHolder> entry : updateState.getPlayers().entrySet()) {
 			key = entry.getKey();
 			player = entry.getValue();
-			player.setId(key);
 			
-			if(mPlayers.containsKey(key))
-				mPlayers.get(key).update(player);
+			if(player != null) {
+				player.setId(key);
+				
+				if(mPlayers.containsKey(key))
+					//Player exists, update
+					mPlayers.get(key).update(player);
+				else {
+					//New friend
+					Print.log(player.getName() + " has joined!");
+					mPlayers.put(key, player);
+				}
+			}
 			else {
-				//New friend
-				Print.log(player.getName() + " has joined!");
-				mPlayers.put(key, player);
+				//Player has left
+				Print.log(mPlayers.get(key).getName() + " has left!");
+//				mPlayers.remove(key);
+				mPlayers.put(key, null);
 			}
 		}
 		

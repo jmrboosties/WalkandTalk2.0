@@ -158,16 +158,22 @@ public class GameplayState extends BasicGameState implements OnUpdateReceivedLis
 				continue;
 			
 			holder = entry.getValue();
-
-			if(mPlayers.containsKey(key)) 
-				mPlayers.get(key).updatePosition(holder);
-			else {
-				try {
-					PeerPlayer newPeer = new PeerPlayer(holder);
-					mPlayers.put(key, newPeer);
-				} catch (SlickException e) {
-					e.printStackTrace();
+			
+			if(holder != null) {
+				if(mPlayers.containsKey(key)) 
+					mPlayers.get(key).updatePosition(holder);
+				else {
+					try {
+						PeerPlayer newPeer = new PeerPlayer(holder);
+						mPlayers.put(key, newPeer);
+					} catch (SlickException e) {
+						e.printStackTrace();
+					}
 				}
+			}
+			else {
+				mPlayers.remove(key);
+				snapshot.getPlayers().remove(key);
 			}
 		}
 	}

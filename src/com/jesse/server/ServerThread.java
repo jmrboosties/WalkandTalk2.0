@@ -28,7 +28,7 @@ public class ServerThread extends Thread {
 		super("ServerThread");
 		mServer = server;
 		mSocket = socket;
-		mServer.addNewClientSocket(socket);
+		mServer.addNewClientSocket(mSocket);
 	}
 	
 	public void run() {
@@ -50,6 +50,8 @@ public class ServerThread extends Thread {
 				switch(type) {
 				case Command.COMMAND_JOIN :
 					command = gson.fromJson(commandJson, JoinCommand.class);
+					Print.log("socket: " + mSocket.toString());
+					mServer.addToNewPlayerMap(json.getAsJsonPrimitive("mPlayerId").getAsInt(), mSocket);
 					break;
 				case Command.COMMAND_MOVE :
 					command = gson.fromJson(commandJson, MoveCommand.class);
@@ -72,7 +74,7 @@ public class ServerThread extends Thread {
 			mSocket.close();
 			
 		} catch(SocketException e) {
-			Print.log("Player has unexpectedly left.");
+			mServer.dropPlayer(mSocket);
 		} catch(IOException e) {
 			e.printStackTrace();
 		}

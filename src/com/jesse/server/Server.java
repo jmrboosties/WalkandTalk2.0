@@ -13,6 +13,9 @@ import com.google.gson.Gson;
 import com.google.gson.JsonParser;
 import com.jesse.game.data.Command;
 import com.jesse.game.data.GameSnapshot;
+import com.jesse.game.data.LeaveCommand;
+import com.jesse.game.data.PlayerHolder;
+import com.jesse.game.utils.Print;
 
 public class Server {
 	
@@ -23,6 +26,8 @@ public class Server {
 	private HashMap<Integer, String> mMessageQueue;
 	private ArrayList<Command> mCommandList;
 	private ArrayList<Socket> mClientSockets;
+	private HashMap<Integer, Socket> mNewPlayers;
+	private HashMap<Socket, PlayerHolder> mPlayerMap;
 	private ArrayList<Socket> mNewClientSockets;
 	public boolean debugMode = false;
 	
@@ -32,6 +37,8 @@ public class Server {
 		mClientSockets = new ArrayList<Socket>();
 		mNewClientSockets = new ArrayList<Socket>();
 		mMessageQueue = new HashMap<Integer, String>();
+		mNewPlayers = new HashMap<Integer, Socket>();
+		mPlayerMap = new HashMap<Socket, PlayerHolder>();
 		parser = new JsonParser();
 		gson = new Gson();
 	}
@@ -102,6 +109,24 @@ public class Server {
 		mMessageQueue.clear();
 	}
 	
+	public void addToNewPlayerMap(Integer playerId, Socket socket) {
+		mNewPlayers.put(playerId, socket);
+		Print.log("new players: " + mNewPlayers.toString());
+	}
+	
+	public HashMap<Integer, Socket> getNewPlayerMap() {
+		return mNewPlayers;
+	}
+	
+	public void transferPlayer(PlayerHolder holder) {
+		Print.log("holder: " + holder.toString());
+		Socket socket = mNewPlayers.get(holder.getId());
+		if(socket == null)
+			Print.log("where did we go so wrong");
+		mPlayerMap.put(socket, holder);
+		mNewPlayers.remove(holder.getId());
+	}
+	
 	private class InputHandler implements Runnable {
 
 		@Override
@@ -121,8 +146,19 @@ public class Server {
 			if(entry.equals("x")) {
 				System.exit(0);
 			}
+			else if(entry.equals("c")) {
+				Print.log(mPlayerMap.toString());
+			}
 		}
 		
+	}
+
+	public void dropPlayer(Socket socket) {
+		PlayerHolder player = mPlayerMap.get(socket);
+		if(player == null)
+			Print.log("fuck");
+		mCommandList.add(new LeaveCommand(player));
+		mPlayerMap.remove(socket);
 	}
 	
 }

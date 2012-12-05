@@ -14,6 +14,7 @@ public abstract class Command implements Serializable, Gsonable {
 	public static final int COMMAND_JOIN = 0;
 	public static final int COMMAND_MOVE = 1;
 	public static final int COMMAND_MESSAGE = 2;
+	public static final int COMMAND_LEAVE = 3;
 	
 	public abstract void execute(PlayerHolder holder);
 	
