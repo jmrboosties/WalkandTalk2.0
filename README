@@ -2,7 +2,7 @@ An attempt to make a game engine using Slick, a library supporting LWJGL (which 
 
 OK, it's come far enough along that it deserves a real README. That and I'm waiting for some resources at work so I'm kinda bored.
 
-Premise: The goal of this project is to develop and engine that allows 2d sprites to walk around different maps and communicate with one another. Project uses Pokemon sprites because I feel like it. If Nintendo is reading this and has a problem, please send a handwritten letter to my home address specifying your complaint along with a copy of Mario Teaches Typing 2 signed by Shigeru Miyamoto.
+Premise: The goal of this project is to develop an engine that allows 2d sprites to walk around different maps and communicate with one another. Project uses Pokemon sprites because I feel like it. If Nintendo is reading this and has a problem, please send a handwritten letter to my home address specifying your complaint along with a copy of Mario Teaches Typing 2 signed by Shigeru Miyamoto.
 
 HOW TO HELP:
 
