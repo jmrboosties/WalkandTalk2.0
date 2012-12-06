@@ -1,1 +1,33 @@
-An attempt to make a game engine using LWJGL. Let's hope for the best.
+An attempt to make a game engine using Slick, a library supporting LWJGL (which is written in Java). Let's hope for the best.
+
+OK, it's come far enough along that it deserves a real README. That and I'm waiting for some resources at work so I'm kinda bored.
+
+Premise: The goal of this project is to develop and engine that allows 2d sprites to walk around different maps and communicate with one another. Project uses Pokemon sprites because I feel like it. If Nintendo is reading this and has a problem, please send a handwritten letter to my home address specifying your complaint along with a copy of Mario Teaches Typing 2 signed by Shigeru Miyamoto.
+
+HOW TO HELP:
+
+The repo has everything you need in it, except for Eclipse and Java. You can get those yourself. If you want, you can also download Tiled to make maps. If you're reading this, that means I haven't uploaded my Tiled guidelines yet, which you will need if you want to make a map right. If you really want to do maps and I haven't put that guideline up yet, just email me or msg me on Github and I can tell you what you need real quick.
+
+If you want to code, just make a fork and start messing around. Anyone can use this to learn or abuse or whatever, just don't steal it ok? If you want to help, check out the TODO list below for things I could use help on. If you have an idea for something that isn't listed here, just shoot me a msg or email and I'll let you know if it is in line with what I'm thinking. You are free of course to do whatever you want, but if you add ponies or something I'm not going to merge your fork.
+
+TASKS COMPLETED:
+
+* Server is up. In order to host users remotely, port 7377 needs to be open on your router.
+
+* Client is up. Users can type the ip of their host (or just use localhost on the same machine) to connect to a server.
+
+* Multiple client support. I've only tested 2, but in theory it should be able to host lots of people.
+
+* Messaging is live. Users can press y to open up a message window and type stuff which will be seen by other users on the server.
+
+TODO LIST: 
+
+* Need to complete user logoff. Right now the client IP list and player list on the server are completely divorced, I'm working on getting them back together. If you're looking to jump on this project and you're reading this item, don't worry about it, I'm 90% done and I should be moving this to the completed list shortly.
+
+* Realm transitions. I don't know what else to call it. Basically going from one area to another, from city to house, etc. Different rendered zones, whatever. I need to not only handle these transitions client-side, but also serverside. When you're in a house, for instance, you don't need to know what people outside are doing, just the people that will be drawn on your screen.
+
+* Player drawing. It work's fine right now, except the logic is really basic. User player's are drawn "on top" no matter what. So if multiple players occupy the same coordinate, you see your player, not the peer player. The problem with this is that the character sprites take up slightly more than 1 coordinate to give the illusion of depth. So if you're standing one space below another user, your head should peek over their feet a bit. Except the way it is now, it just puts the user's player on top no matter what, so in this case it would look like your player is standing on the peer player's head. Try it out for yourself, you will see.
+
+* Code cleanup anywhere you think you can optimize, if you're into that kind of thing. I think I did a pretty good job, but I'm sure there are places that could use help.
+
+* There are TONS of more things to do, but these are the changes I think we/I should tackle right now.
