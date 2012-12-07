@@ -8,6 +8,6 @@ public interface OnEnterPressedListener {
 	 * @param text, the content of the TextField
 	 * @return true if whatever you handled was successful, else false.
 	 */
-	public boolean onEnterPressed(String text);
+	public boolean onEnterPressed(int dialogId, String text);
 	
 }

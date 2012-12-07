@@ -4,16 +4,16 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.HashMap;
-import java.util.TimerTask;
 import java.util.Map.Entry;
+import java.util.TimerTask;
 
 import com.google.gson.JsonObject;
 import com.jesse.game.data.Command;
 import com.jesse.game.data.GameSnapshot;
 import com.jesse.game.data.MessageCommand;
 import com.jesse.game.data.PlayerHolder;
-import com.jesse.game.utils.Print;
 import com.jesse.game.utils.Constants.State;
+import com.jesse.game.utils.Print;
 
 public class MainServerLoop extends TimerTask {
 	
@@ -51,6 +51,7 @@ public class MainServerLoop extends TimerTask {
 			case Command.COMMAND_LEAVE :
 				//TODO add null or something so clients know theyre gone
 				newState.getPlayers().remove(command.getPlayerId());
+				mServer.addLeavingPlayerId(command.getPlayerId());
 				holder = null;
 				break;
 			}
@@ -108,12 +109,18 @@ public class MainServerLoop extends TimerTask {
 				player.setState(State.IDLE);
 			}
 			
+			for (Integer id : mServer.getLeavingPlayers())
+				playersJson.add(String.valueOf(id), null);
+			
+			mServer.clearLeavingPlayers();
+			
 			stateJson.add("mPlayers", playersJson);
 		}
 		
 		PrintWriter out;
 		JsonObject jContainer = new JsonObject();
 		
+		//To already joined clients
 		jContainer.add("messages", mServer.gson.toJsonTree(mServer.getMessageQueue(), HashMap.class));
 		mServer.clearMessageQueue();
 		
@@ -121,23 +128,26 @@ public class MainServerLoop extends TimerTask {
 			String json = stateJson.toString();
 			jContainer.add("snapshot", mServer.parser.parse(json));
 		}
-
+		
 		Print.log("sending to clients: " + jContainer.toString());
+		
 		for (Socket socket : mServer.getClientSockets()) {
 			out = new PrintWriter(socket.getOutputStream(), true);
 			out.println(jContainer.toString());
 		}
 		
+		//People new as of this tick
 		if(mServer.getNewClientSockets().size() > 0) {
 			String newJson = mServer.gson.toJson(newState);
 			JsonObject newPlayersContainer = new JsonObject();
+			
 			newPlayersContainer.addProperty("joined", true);
 			newPlayersContainer.add("snapshot", mServer.parser.parse(newJson));
-//			newJson = "{\"joined\":true,".concat(newJson.substring(1));
+			
 			Print.log("sending to new clients: " + newPlayersContainer.toString());
+			
 			for (Socket socket : mServer.getNewClientSockets()) {
 				out = new PrintWriter(socket.getOutputStream(), true);
-				
 				out.println(newPlayersContainer.toString());
 			}
 

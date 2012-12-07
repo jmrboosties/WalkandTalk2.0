@@ -29,6 +29,7 @@ public class Server {
 	private HashMap<Integer, Socket> mNewPlayers;
 	private HashMap<Socket, PlayerHolder> mPlayerMap;
 	private ArrayList<Socket> mNewClientSockets;
+	private ArrayList<Integer> mPlayersLeaving;
 	public boolean debugMode = false;
 	
 	public Server() {
@@ -39,6 +40,8 @@ public class Server {
 		mMessageQueue = new HashMap<Integer, String>();
 		mNewPlayers = new HashMap<Integer, Socket>();
 		mPlayerMap = new HashMap<Socket, PlayerHolder>();
+		mPlayersLeaving = new ArrayList<Integer>();
+		
 		parser = new JsonParser();
 		gson = new Gson();
 	}
@@ -111,7 +114,6 @@ public class Server {
 	
 	public void addToNewPlayerMap(Integer playerId, Socket socket) {
 		mNewPlayers.put(playerId, socket);
-		Print.log("new players: " + mNewPlayers.toString());
 	}
 	
 	public HashMap<Integer, Socket> getNewPlayerMap() {
@@ -119,12 +121,27 @@ public class Server {
 	}
 	
 	public void transferPlayer(PlayerHolder holder) {
-		Print.log("holder: " + holder.toString());
 		Socket socket = mNewPlayers.get(holder.getId());
-		if(socket == null)
-			Print.log("where did we go so wrong");
 		mPlayerMap.put(socket, holder);
 		mNewPlayers.remove(holder.getId());
+	}
+	
+	public void dropPlayer(Socket socket) {
+		PlayerHolder player = mPlayerMap.get(socket);
+		mCommandList.add(new LeaveCommand(player));
+		mPlayerMap.remove(socket);
+	}
+	
+	public void addLeavingPlayerId(int id) {
+		mPlayersLeaving.add(id);
+	}
+	
+	public ArrayList<Integer> getLeavingPlayers() {
+		return mPlayersLeaving;
+	}
+	
+	public void clearLeavingPlayers() {
+		mPlayersLeaving.clear();
 	}
 	
 	private class InputHandler implements Runnable {
@@ -149,16 +166,11 @@ public class Server {
 			else if(entry.equals("c")) {
 				Print.log(mPlayerMap.toString());
 			}
+			else if(entry.equals("v")) {
+				Print.log(mGameState.getPlayers().toString());
+			}
 		}
 		
-	}
-
-	public void dropPlayer(Socket socket) {
-		PlayerHolder player = mPlayerMap.get(socket);
-		if(player == null)
-			Print.log("fuck");
-		mCommandList.add(new LeaveCommand(player));
-		mPlayerMap.remove(socket);
 	}
 	
 }

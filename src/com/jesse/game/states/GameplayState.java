@@ -1,5 +1,6 @@
 package com.jesse.game.states;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map.Entry;
@@ -70,19 +71,6 @@ public class GameplayState extends BasicGameState implements OnUpdateReceivedLis
 		mTransitionBlack = new Rectangle(0, 0, GameMain.SCREEN_WIDTH, GameMain.SCREEN_WIDTH);
 //		mTransitionBlack.
 	}
-	
-//	@Override
-//	protected RootPane createRootPane() {
-//		RootPane rp = super.createRootPane();
-//		rp.setTheme("theme");
-////		
-////		mDa = new DesktopArea();
-////		
-////		rp.add(mDa);
-////		
-////		createPopupWindow(rp);
-//		return rp;
-//	}
 
 	@Override
 	public void render(GameContainer gc, StateBasedGame game, Graphics grfx) throws SlickException {
@@ -108,7 +96,10 @@ public class GameplayState extends BasicGameState implements OnUpdateReceivedLis
 			peer.update(delta);
 		
 		for (Entry<PlayerHolder, String> entry : mGame.getMessageQueue().entrySet()) {
-			mChatBox.addText(entry.getKey().getName() + ": " + entry.getValue());
+			if(entry.getKey() != null)
+				mChatBox.addText(entry.getKey().getName() + ": " + entry.getValue());
+			else
+				mChatBox.addText(entry.getValue());
 		}
 		
 		mGame.getMessageQueue().clear();
@@ -150,9 +141,11 @@ public class GameplayState extends BasicGameState implements OnUpdateReceivedLis
 	}
 	
 	private void updatePlayerArray(GameSnapshot snapshot) {
+		ArrayList<Integer> playersToDump = new ArrayList<Integer>();
+		
 		int key;
 		PlayerHolder holder;
-		for (Entry<Integer, PlayerHolder> entry : snapshot.getPlayers().entrySet()) {			
+		for (Entry<Integer, PlayerHolder> entry : snapshot.getPlayers().entrySet()) { //THIS THROWS EXCEPTION
 			key = entry.getKey();
 			if(key == mUserPlayer.getId())
 				continue;
@@ -173,9 +166,15 @@ public class GameplayState extends BasicGameState implements OnUpdateReceivedLis
 			}
 			else {
 				mPlayers.remove(key);
-				snapshot.getPlayers().remove(key);
+				playersToDump.add(key);
+//				snapshot.removePlayer(key); //THIS IS THE LINE CAUSING EXCEPTION
 			}
 		}
+		
+		for (Integer id : playersToDump) {
+			snapshot.removePlayer(id);
+		}
+		
 	}
 	
 	public void loadPlayer(PlayerHolder holder) throws SlickException {

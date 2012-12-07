@@ -8,6 +8,7 @@ import java.util.Set;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import com.google.gson.JsonObject;
+import com.jesse.game.GameMain;
 import com.jesse.game.utils.Gsonable;
 import com.jesse.game.utils.Print;
 
@@ -43,7 +44,10 @@ public class GameSnapshot implements Serializable, Gsonable {
 		value += "\n  Players: " + mPlayers.size();
 		Set<Entry<Integer, PlayerHolder>> set = mPlayers.entrySet();
 		for (Entry<Integer, PlayerHolder> entry : set) {
-			value += "\n     " + entry.getValue().toString();
+			if(entry.getValue() != null)
+				value += "\n     " + entry.getValue().toString();
+			else
+				value += "\n      someone is leaving...";
 		}
 		value += "\n  End.";
 		return value;
@@ -73,7 +77,7 @@ public class GameSnapshot implements Serializable, Gsonable {
 		return null;
 	}
 	
-	public void update(GameSnapshot updateState) {
+	public void update(GameSnapshot updateState, GameMain game) {
 		int key;
 		PlayerHolder player;
 		for (Entry<Integer, PlayerHolder> entry : updateState.getPlayers().entrySet()) {
@@ -90,17 +94,23 @@ public class GameSnapshot implements Serializable, Gsonable {
 					//New friend
 					Print.log(player.getName() + " has joined!");
 					mPlayers.put(key, player);
+//					game.addSystemMessageToQueue(player.getName() + " has joined!");
 				}
 			}
 			else {
 				//Player has left
 				Print.log(mPlayers.get(key).getName() + " has left!");
-//				mPlayers.remove(key);
+				game.addSystemMessageToQueue(mPlayers.get(key).getName() + " has left!");
 				mPlayers.put(key, null);
 			}
 		}
 		
 		Print.log(toString());
+	}
+	
+	public void removePlayer(int id) {
+//		Print.log(mPlayers.get(id).getName() + " has left!");
+		mPlayers.remove(id);
 	}
 
 }

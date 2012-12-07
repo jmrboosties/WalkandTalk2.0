@@ -29,13 +29,18 @@ public class SplashPage extends BasicGameState implements OnEnterPressedListener
 	private TextField mStart;
 	private TextField mExit;
 	private EntryPopup mServerSelectionPopup;
+	private EntryPopup mNameEntryPopup;
 	
-	private int mSelectedOption;
-	
+	private int mSelectedOption;	
 	private int mPressedKey = -1;
+	
+	private String mEnteredName;
 	
 	private static final int START = 0;
 	private static final int EXIT = 1;
+	
+	private static final int NAME_ENTRY = 0;
+	private static final int SERVER_ENTRY = 1;
 
 	public SplashPage(int id) {
 		mId = id;
@@ -50,13 +55,20 @@ public class SplashPage extends BasicGameState implements OnEnterPressedListener
 		
 		mExit = new TextField(gc, new TrueTypeFont(new Font("Arial", Font.BOLD, 30), true), 
 				GameMain.SCREEN_WIDTH * 2 / 3, (int) (GameMain.SCREEN_HEIGHT / 1.25), 100, 100);
-		
-		mServerSelectionPopup = new EntryPopup(gc, 
+				
+		mServerSelectionPopup = new EntryPopup(gc, SERVER_ENTRY,
 				GameMain.SCREEN_WIDTH * 3 / 8, GameMain.SCREEN_HEIGHT * 3 / 8, 
 				GameMain.SCREEN_WIDTH / 4, GameMain.SCREEN_HEIGHT / 4);
 		
 		mServerSelectionPopup.setText("Enter server IP");
 		mServerSelectionPopup.setOnEnterPressedListener(this);
+		
+		mNameEntryPopup = new EntryPopup(gc, NAME_ENTRY,
+				GameMain.SCREEN_WIDTH * 3 / 8, GameMain.SCREEN_HEIGHT * 3 / 8, 
+				GameMain.SCREEN_WIDTH / 4, GameMain.SCREEN_HEIGHT / 4);
+		
+		mNameEntryPopup.setText("What is your name?");
+		mNameEntryPopup.setOnEnterPressedListener(this);
 		
 		mStart.setBackgroundColor(null);
 		mStart.setBorderColor(null);
@@ -79,6 +91,7 @@ public class SplashPage extends BasicGameState implements OnEnterPressedListener
 		mStart.render(gc, grfx);
 		mExit.render(gc, grfx);
 		mServerSelectionPopup.render(gc, grfx);
+		mNameEntryPopup.render(gc, grfx);
 	}
 
 	@Override
@@ -97,11 +110,13 @@ public class SplashPage extends BasicGameState implements OnEnterPressedListener
 			mPressedKey = Keyboard.KEY_RETURN;
 			if(mServerSelectionPopup.textEntryHasFocus() && mServerSelectionPopup.getEntryText().length() > 0)
 				mServerSelectionPopup.enterPressed();
+			else if(mNameEntryPopup.textEntryHasFocus() && mNameEntryPopup.getEntryText().trim().length() > 0)
+				mNameEntryPopup.enterPressed();
 			else if(mSelectedOption == EXIT)
 				System.exit(0);
 			else if(mSelectedOption == START) {
-				mServerSelectionPopup.launch();
-//				mGame.connectToServer();
+				mNameEntryPopup.launch();
+//				mServerSelectionPopup.launch();
 			}
 		}
 		else if(gc.getInput().isKeyDown(Keyboard.KEY_ESCAPE)) {
@@ -138,9 +153,19 @@ public class SplashPage extends BasicGameState implements OnEnterPressedListener
 	}
 
 	@Override
-	public boolean onEnterPressed(String text) {
-		mGame.connectToServer(text);
-		return true;
+	public boolean onEnterPressed(int id, String text) {
+		switch(id) {
+		case NAME_ENTRY :
+			Print.log("arrived");
+			mEnteredName = text;
+			mNameEntryPopup.setVisibility(false);
+			mServerSelectionPopup.launch();
+			return true;
+		case SERVER_ENTRY :
+			mGame.connectToServer((mEnteredName != null && mEnteredName.trim().length() > 0) ? mEnteredName : "Default", text);
+			return true;
+		}
+		return false;
 	}
 	
 }

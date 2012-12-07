@@ -16,11 +16,15 @@ public class EntryPopup extends UIElement {
 	private TextArea mCaption;
 	private TextField mEntryField;
 	
+	private int mId = -1;
+	
 	public OnEnterPressedListener mListener;
 	
-	public EntryPopup(GameContainer gc, float x, float y, int width, int height) {
+	public EntryPopup(GameContainer gc, int id, float x, float y, int width, int height) {
 		super(x, y, width, height);
 
+		mId = id;
+		
 		mEntryField = new TextField(gc, new TrueTypeFont(new Font("Arial", Font.BOLD, 20), true), 
 				(int)(mBackground.getMinX() + 6), (int)(mBackground.getMaxY() - 28), mWidth - 12, 24);
 		
@@ -48,7 +52,7 @@ public class EntryPopup extends UIElement {
 	}
 	
 	public void enterPressed() {
-		if(mListener.onEnterPressed(mEntryField.getText()))
+		if(mListener.onEnterPressed(mId, mEntryField.getText()))
 			mEntryField.setText("");
 	}
 	

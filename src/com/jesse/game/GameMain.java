@@ -5,6 +5,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.HashMap;
+import java.util.Random;
 
 import org.newdawn.slick.AppGameContainer;
 import org.newdawn.slick.GameContainer;
@@ -70,7 +71,7 @@ public class GameMain extends StateBasedGame implements ConnectionStatusListener
 	public synchronized void preUpdateState(GameContainer gc, int delta) throws SlickException {
 		if(mReceiver != null) {
 			if(mNextSnapshot != null) {
-				mGameSnapshot.update(mNextSnapshot);
+				mGameSnapshot.update(mNextSnapshot, this);
 				
 				if(mUpdateListener != null)
 					mUpdateListener.onUpdateReceived(mGameSnapshot);
@@ -81,12 +82,12 @@ public class GameMain extends StateBasedGame implements ConnectionStatusListener
 		}
 	}
 	
-	public void connectToServer(String ip) {
+	public void connectToServer(String name, String ip) {
 		long time = System.currentTimeMillis();
 //		enterState(Constants.LOADING_STATE_ID);
 		
 		mGameSnapshot = new GameSnapshot();
-		mThisPlayer = new PlayerHolder(0, new Vector2i(17, 16), "Onree");
+		mThisPlayer = new PlayerHolder(new Random().nextInt(1000), new Vector2i(17, 16), name);
 		mGameSnapshot.addPlayer(mThisPlayer);
 		
 		Socket socket = null;
@@ -183,21 +184,9 @@ public class GameMain extends StateBasedGame implements ConnectionStatusListener
 				mMessageQueue.put(holder, map.get(id));
 		}
 	}
-
-//	@SuppressWarnings("deprecation")
-//	@Override
-//	protected URL getThemeURL() {
-//		File file = new File("res/ui/themes/simple.xml");
-//		Print.log(file.toString());
-//		URL url = null;
-//		try {
-//			url = file.toURL();
-//			Print.log(url.toString());
-//		} catch (MalformedURLException e) {
-//			e.printStackTrace();
-//		}
-//		
-//		return url;
-//	}
+	
+	public synchronized void addSystemMessageToQueue(String msg) {
+		mMessageQueue.put(null, msg);
+	}
 	
 }

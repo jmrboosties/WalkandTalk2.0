@@ -77,7 +77,7 @@ public class ServerReceiver implements Runnable {
 				HashMap<String, String> messageMap = mGson.fromJson(messages, HashMap.class);
 				mGame.loadMessageQueue(messageMap);
 			}
-			
+							
 			mGame.setUpdateSnapshot(mGson.fromJson(jObject.getAsJsonObject("snapshot"), GameSnapshot.class));
 		}
 		notifyAll();
