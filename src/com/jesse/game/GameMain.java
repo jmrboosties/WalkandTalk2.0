@@ -1,12 +1,14 @@
 package com.jesse.game;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.Random;
 
+import org.lwjgl.LWJGLUtil;
 import org.newdawn.slick.AppGameContainer;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.SlickException;
@@ -55,7 +57,6 @@ public class GameMain extends StateBasedGame implements ConnectionStatusListener
 		app.setTargetFrameRate(240);
 		app.start();
 	}
-	
 
 	public GameMain(String name) {
 		super(name);
