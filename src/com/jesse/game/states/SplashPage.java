@@ -49,7 +49,7 @@ public class SplashPage extends BasicGameState implements OnEnterPressedListener
 	@Override
 	public void init(GameContainer gc, StateBasedGame game) throws SlickException {
 		mGame = (GameMain) game;
-		mLogo = new Image("res/images/pokemonlogo.png");
+		mLogo = new Image("res/images/logo.png");
 		mStart = new TextField(gc, new TrueTypeFont(new Font("Arial", Font.BOLD, 30), true), 
 				GameMain.SCREEN_WIDTH / 4, (int) (GameMain.SCREEN_HEIGHT / 1.25), 100, 100);
 		
