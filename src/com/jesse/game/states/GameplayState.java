@@ -19,9 +19,9 @@ import org.newdawn.slick.tiled.Layer;
 
 import com.jesse.game.GameMain;
 import com.jesse.game.data.GameSnapshot;
-import com.jesse.game.data.MessageCommand;
-import com.jesse.game.data.MoveCommand;
 import com.jesse.game.data.PlayerHolder;
+import com.jesse.game.data.commands.MessageCommand;
+import com.jesse.game.data.commands.MoveCommand;
 import com.jesse.game.drawables.PeerPlayer;
 import com.jesse.game.drawables.UserPlayer;
 import com.jesse.game.listeners.OnUpdateReceivedListener;
@@ -29,6 +29,7 @@ import com.jesse.game.net.ServerSender;
 import com.jesse.game.objects.Vector2i;
 import com.jesse.game.tiled.TiledMapUsable;
 import com.jesse.game.ui.Chatbox;
+import com.jesse.game.utils.Constants;
 import com.jesse.game.utils.Print;
 
 public class GameplayState extends BasicGameState implements OnUpdateReceivedListener {
@@ -57,19 +58,15 @@ public class GameplayState extends BasicGameState implements OnUpdateReceivedLis
 		mGame.setOnUpdateListener(this);
 		mPlayers = new HashMap<Integer, PeerPlayer>();
 		PlayerHolder holder = mGame.getUserPlayerHolder();
-		mUserPlayer = new UserPlayer(holder.getName(), holder.coordinates, holder.getId());
-		mMap = new TiledMapUsable("res/maps/littleplace.tmx", "res/tilesets/");
-		Layer collisionLayer = mMap.getLayers().get(0);
-		mCollisionTiles = new HashSet<Vector2i>();
-		for (int i = 0; i < collisionLayer.width; i++) 
-			for (int j = 0; j < collisionLayer.height; j++) 
-				if(collisionLayer.getTileID(i, j) != 0)
-					mCollisionTiles.add(new Vector2i(i, j));
+		mUserPlayer = new UserPlayer(holder);
+		
+		Print.log("ho a ho" + holder.toString());
+		
+		loadMap(holder.getMapId(), holder.coordinates);
 		
 		mChatBox = new Chatbox(gc, 10, (GameMain.SCREEN_HEIGHT * 3 / 4) - 10, GameMain.SCREEN_WIDTH / 4, GameMain.SCREEN_HEIGHT / 4);
 		
 		mTransitionBlack = new Rectangle(0, 0, GameMain.SCREEN_WIDTH, GameMain.SCREEN_WIDTH);
-//		mTransitionBlack.
 	}
 
 	@Override
@@ -91,7 +88,6 @@ public class GameplayState extends BasicGameState implements OnUpdateReceivedLis
 
 	@Override
 	public void update(GameContainer gc, StateBasedGame game, int delta) throws SlickException {
-		
 		for (PeerPlayer peer : mPlayers.values())
 			peer.update(delta);
 		
@@ -105,7 +101,7 @@ public class GameplayState extends BasicGameState implements OnUpdateReceivedLis
 		mGame.getMessageQueue().clear();
 		
 		if(!mChatBox.isVisible()) {
-			MoveCommand command = mUserPlayer.update(gc.getInput(), delta, mCollisionTiles);
+			MoveCommand command = mUserPlayer.update(gc.getInput(), delta, mCollisionTiles, mGame.getUserPlayerHolder().getMapId());
 			if(command != null)
 				new Thread(new ServerSender(mGame.outWriter, command, mUserPlayer.getId())).start();
 		}
@@ -116,7 +112,7 @@ public class GameplayState extends BasicGameState implements OnUpdateReceivedLis
 	private void sendMessage() {
 		String textMsg = mChatBox.getTextForMessage();
 		if(textMsg != null && textMsg.length() > 0) {
-			MessageCommand msgCommand = new MessageCommand(mUserPlayer.getId(), textMsg);
+			MessageCommand msgCommand = new MessageCommand(mUserPlayer.getId(), textMsg, mGame.getUserPlayerHolder().getMapId());
 			Print.log("sending command: " + msgCommand.toString());
 			new Thread(new ServerSender(mGame.outWriter, msgCommand, mUserPlayer.getId())).start();
 		}
@@ -138,6 +134,22 @@ public class GameplayState extends BasicGameState implements OnUpdateReceivedLis
 		
 		if(input.isKeyPressed(Keyboard.KEY_RETURN) && mChatBox.textEntryHasFocus())
 			sendMessage();
+		
+		if(input.isKeyPressed(Keyboard.KEY_P)) {
+			try {
+				loadMap(Constants.FIELD, new Vector2i());
+			} catch (SlickException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		if(input.isKeyPressed(Keyboard.KEY_L)) {
+			try {
+				loadMap(Constants.MAIN, new Vector2i(17, 16));
+			} catch(SlickException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 	
 	private void updatePlayerArray(GameSnapshot snapshot) {
@@ -167,7 +179,6 @@ public class GameplayState extends BasicGameState implements OnUpdateReceivedLis
 			else {
 				mPlayers.remove(key);
 				playersToDump.add(key);
-//				snapshot.removePlayer(key); //THIS IS THE LINE CAUSING EXCEPTION
 			}
 		}
 		
@@ -187,8 +198,22 @@ public class GameplayState extends BasicGameState implements OnUpdateReceivedLis
 		}
 	}
 	
-	private void changeLevels() {
+	private void loadMap(int mapId, Vector2i coords) throws SlickException {
+		if(mMap != null && mMap.getMapId() == mapId) {
+			Print.log("Already on " + Constants.MAPS.get(mapId));
+			return;
+		}
 		
+		mMap = new TiledMapUsable("res/maps/"+Constants.MAPS.get(mapId)+".tmx", "res/tilesets/", mapId);
+		Layer collisionLayer = mMap.getLayers().get(0);
+		mCollisionTiles = new HashSet<Vector2i>();
+		for (int i = 0; i < collisionLayer.width; i++) 
+			for (int j = 0; j < collisionLayer.height; j++) 
+				if(collisionLayer.getTileID(i, j) != 0)
+					mCollisionTiles.add(new Vector2i(i, j));
+		
+//		mUserPlayer.coordinates.x = coords.x;
+//		mUserPlayer.coordinates.y = coords.y;
 		
 	}
 	

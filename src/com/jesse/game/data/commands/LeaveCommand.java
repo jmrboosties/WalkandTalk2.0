@@ -1,6 +1,7 @@
-package com.jesse.game.data;
+package com.jesse.game.data.commands;
 
 import com.google.gson.JsonObject;
+import com.jesse.game.data.PlayerHolder;
 
 public class LeaveCommand extends Command {
 	
@@ -9,9 +10,8 @@ public class LeaveCommand extends Command {
 	private PlayerHolder mPlayer;
 	
 	public LeaveCommand(PlayerHolder player) {
-		mPlayerId = player.getId();
+		super(player.getId(), COMMAND_LEAVE, player.getMapId());
 		mPlayer = player;
-		mCommandType = COMMAND_LEAVE;
 	}
 	
 	@Override

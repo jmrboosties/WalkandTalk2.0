@@ -4,6 +4,7 @@ import org.newdawn.slick.SlickException;
 import org.newdawn.slick.SpriteSheet;
 import org.newdawn.slick.geom.Vector2f;
 
+import com.jesse.game.data.PlayerHolder;
 import com.jesse.game.objects.Vector2i;
 import com.jesse.game.utils.Constants.Direction;
 import com.jesse.game.utils.Constants.State;
@@ -34,16 +35,15 @@ public abstract class Player {
 		ONE, IDLE, TWO
 	}
 	
-	public Player(String name, int id) throws SlickException {
-		this(name, new Vector2i(), id);
-	}
+//	public Player(String name, int id) throws SlickException {
+//		this(name, new Vector2i(), id);
+//	}
 	
-	public Player(String name, Vector2i coordinates, int id) throws SlickException {
-		mId = id;
-		this.mName = name;
-//		if(coordinates != null) {
-			this.coordinates = new Vector2i(coordinates);
-			this.drawnCoordinates = new Vector2f(coordinates.x, coordinates.y);			
+	public Player(PlayerHolder holder) throws SlickException {
+		mId = holder.getId();
+		mName = holder.getName();
+		coordinates = new Vector2i(holder.coordinates);
+		drawnCoordinates = new Vector2f(coordinates.x, coordinates.y);			
 	}
 	
 	public void loadCoordinates(Vector2i coordinates) {

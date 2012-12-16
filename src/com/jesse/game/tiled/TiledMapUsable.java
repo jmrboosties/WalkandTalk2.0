@@ -8,7 +8,9 @@ import org.newdawn.slick.tiled.Layer;
 import org.newdawn.slick.tiled.TiledMap;
 
 public class TiledMapUsable extends TiledMap {
-
+	
+	private int mMapId = -1;
+	
 	public TiledMapUsable(InputStream in) throws SlickException {
 		super(in);
 	}
@@ -25,13 +27,18 @@ public class TiledMapUsable extends TiledMap {
 		super(ref, loadTileSets);
 	}
 	
-	public TiledMapUsable(String ref, String location) throws SlickException {
+	public TiledMapUsable(String ref, String location, int mapId) throws SlickException {
 		super(ref, location);
+		mMapId = mapId;
 	}
 
 	@SuppressWarnings("unchecked")
 	public ArrayList<Layer> getLayers() {
 		return layers;
+	}
+	
+	public int getMapId() {
+		return mMapId;
 	}
 	
 }

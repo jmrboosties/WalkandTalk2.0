@@ -1,6 +1,7 @@
-package com.jesse.game.data;
+package com.jesse.game.data.commands;
 
 import com.google.gson.JsonObject;
+import com.jesse.game.data.PlayerHolder;
 
 public class MessageCommand extends Command {
 
@@ -8,8 +9,8 @@ public class MessageCommand extends Command {
 	
 	private String mMessage;
 	
-	public MessageCommand(int playerId, String message) {
-		mPlayerId = playerId;
+	public MessageCommand(int playerId, String message, int mapId) {
+		super(playerId, COMMAND_MESSAGE, mapId);
 		mMessage = message;
 	}
 
@@ -20,6 +21,7 @@ public class MessageCommand extends Command {
 		commandJson.addProperty("mMessage", mMessage);
 		jObj.addProperty("command_type", COMMAND_MESSAGE);
 		jObj.addProperty("mPlayerId", mPlayerId);
+		jObj.addProperty("mMapId", mMapId);
 		jObj.add("command", commandJson);
 		return jObj;
 	}

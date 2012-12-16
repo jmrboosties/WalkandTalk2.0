@@ -8,10 +8,11 @@ import java.util.Map.Entry;
 import java.util.TimerTask;
 
 import com.google.gson.JsonObject;
-import com.jesse.game.data.Command;
 import com.jesse.game.data.GameSnapshot;
-import com.jesse.game.data.MessageCommand;
 import com.jesse.game.data.PlayerHolder;
+import com.jesse.game.data.commands.Command;
+import com.jesse.game.data.commands.MessageCommand;
+import com.jesse.game.utils.Constants;
 import com.jesse.game.utils.Constants.State;
 import com.jesse.game.utils.Print;
 
@@ -28,8 +29,14 @@ public class MainServerLoop extends TimerTask {
 	public void run() {
 		mLoopCount++;
 		
-		GameSnapshot currentState = mServer.getState();
-		GameSnapshot newState = currentState.next();
+//		GameSnapshot currentState = mServer.getState();
+//		GameSnapshot newState = currentState.next();
+		
+		HashMap<Integer, GameSnapshot> currentStates = mServer.getSnapshots();
+		HashMap<Integer, GameSnapshot> newStates = new HashMap<Integer, GameSnapshot>();
+		
+		for (Entry<Integer, GameSnapshot> entry : currentStates.entrySet())
+			newStates.put(entry.getKey(), entry.getValue().next());
 		
 		boolean commandsRun = false;
 		PlayerHolder holder = null;
@@ -38,10 +45,11 @@ public class MainServerLoop extends TimerTask {
 			switch(command.getCommandType()) {
 			case Command.COMMAND_JOIN :
 				holder = new PlayerHolder(command.getPlayerId());
-				newState.addPlayer(holder);
+				newStates.get(command.getMapId()).addPlayer(holder);
 				break;
 			case Command.COMMAND_MOVE :
-				holder = newState.getPlayers().get(command.getPlayerId());
+			case Command.COMMAND_WARP :
+				holder = newStates.get(command.getMapId()).getPlayers().get(command.getPlayerId());
 				break;
 			case Command.COMMAND_MESSAGE :
 				MessageCommand msgCommand = (MessageCommand)command;
@@ -49,8 +57,7 @@ public class MainServerLoop extends TimerTask {
 				holder = null;
 				break;
 			case Command.COMMAND_LEAVE :
-				//TODO add null or something so clients know theyre gone
-				newState.getPlayers().remove(command.getPlayerId());
+				newStates.get(command.getMapId()).getPlayers().remove(command.getPlayerId());
 				mServer.addLeavingPlayerId(command.getPlayerId());
 				holder = null;
 				break;
@@ -60,7 +67,11 @@ public class MainServerLoop extends TimerTask {
 				command.execute(holder);
 			
 			if(command.getCommandType() == Command.COMMAND_JOIN)
-				mServer.transferPlayer(holder);
+				mServer.transferPlayerFromNew(holder);
+			
+			if(command.getCommandType() == Command.COMMAND_WARP) {
+				
+			}
 			
 			commandsRun = true;
 		}
@@ -69,17 +80,19 @@ public class MainServerLoop extends TimerTask {
 		
 		if(commandsRun)
 			try {
-				publishStateToClients(newState, currentState);
+				for (Entry<Integer, GameSnapshot> entry : currentStates.entrySet()) {
+					publishStateToClients(entry.getKey(), newStates.get(entry.getKey()), entry.getValue());
+					mServer.setState(newStates.get(entry.getKey()), entry.getKey());
+				}
 			} catch(Exception e) {
 				e.printStackTrace();
 			}
 			
-		mServer.setState(newState);
 		if(mServer.debugMode)
 			Print.log("Loop: " + mLoopCount);
 	}
 
-	private void publishStateToClients(GameSnapshot newState, GameSnapshot oldState) throws IOException {
+	private void publishStateToClients(int mapId, GameSnapshot newState, GameSnapshot oldState) throws IOException {
 
 		JsonObject stateJson = null;
 		
@@ -93,12 +106,13 @@ public class MainServerLoop extends TimerTask {
 			for (Entry<Integer, PlayerHolder> entry : newState.getPlayers().entrySet()) {
 				key = entry.getKey();
 				player = entry.getValue();
+				
 				if(!oldState.getPlayers().containsKey(key)) {
 					jObj = player.getGson();
 				}
 				else if(!player.equals(oldState.getPlayers().get(key))) {
 					if(!player.coordinates.equals(oldState.getPlayers().get(key).coordinates)) {
-						jObj = player.getGson(true, false, true, false);
+						jObj = player.getGson(true, false, true, false, true);
 					}
 				}
 				
@@ -129,7 +143,7 @@ public class MainServerLoop extends TimerTask {
 			jContainer.add("snapshot", mServer.parser.parse(json));
 		}
 		
-		Print.log("sending to clients: " + jContainer.toString());
+		Print.log("sending to clients of + " + Constants.MAPS.get(mapId) + ": " + jContainer.toString());
 		
 		for (Socket socket : mServer.getClientSockets()) {
 			out = new PrintWriter(socket.getOutputStream(), true);
@@ -144,7 +158,7 @@ public class MainServerLoop extends TimerTask {
 			newPlayersContainer.addProperty("joined", true);
 			newPlayersContainer.add("snapshot", mServer.parser.parse(newJson));
 			
-			Print.log("sending to new clients: " + newPlayersContainer.toString());
+			Print.log("sending to new clients of + " + Constants.MAPS.get(mapId) + ": " + newPlayersContainer.toString());
 			
 			for (Socket socket : mServer.getNewClientSockets()) {
 				out = new PrintWriter(socket.getOutputStream(), true);

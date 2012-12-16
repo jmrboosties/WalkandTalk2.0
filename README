@@ -37,9 +37,9 @@ TASKS COMPLETED:
 
 * User logoff works.
 
-TODO LIST: 
+* The playerlist is now dynamic.
 
-* The playerlist is not dynamic. It saves a copy of the player object when they log on for the first time, but doesnt update as the snapshot does. This doesn't affect gameplay at all, because there is a second player list which works correctly, but doesn't reference player IP's at all. Use the debugging buttons on the server to see what I mean.
+TODO LIST: 
 
 * Realm transitions. I don't know what else to call it. Basically going from one area to another, from city to house, etc. Different rendered zones, whatever. I need to not only handle these transitions client-side, but also serverside. When you're in a house, for instance, you don't need to know what people outside are doing, just the people that will be drawn on your screen.
 

@@ -97,13 +97,13 @@ public class SplashPage extends BasicGameState implements OnEnterPressedListener
 	@Override
 	public void update(GameContainer gc, StateBasedGame game, int delta) throws SlickException {
 			
-		if(gc.getInput().isKeyDown(Keyboard.KEY_A)) {
+		if(gc.getInput().isKeyPressed(Keyboard.KEY_A)) {
 			setChoice(START);
 		}
-		else if(gc.getInput().isKeyDown(Keyboard.KEY_D)) {
+		else if(gc.getInput().isKeyPressed(Keyboard.KEY_D)) {
 			setChoice(EXIT);
 		}
-		else if(gc.getInput().isKeyDown(Keyboard.KEY_RETURN)) {
+		else if(gc.getInput().isKeyPressed(Keyboard.KEY_RETURN)) {
 			if(mPressedKey == Keyboard.KEY_RETURN)
 				return;
 			
@@ -119,7 +119,7 @@ public class SplashPage extends BasicGameState implements OnEnterPressedListener
 //				mServerSelectionPopup.launch();
 			}
 		}
-		else if(gc.getInput().isKeyDown(Keyboard.KEY_ESCAPE)) {
+		else if(gc.getInput().isKeyPressed(Keyboard.KEY_ESCAPE)) {
 			if(mServerSelectionPopup.isVisible())
 				mServerSelectionPopup.setVisibility(false);
 		}

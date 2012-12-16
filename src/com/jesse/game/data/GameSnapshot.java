@@ -17,8 +17,10 @@ public class GameSnapshot implements Serializable, Gsonable {
 	private static final long serialVersionUID = 1L;
 	
 	private HashMap<Integer, PlayerHolder> mPlayers;
+	private int mMapId;
 	
-	public GameSnapshot() {
+	public GameSnapshot(int mapId) {
+		mMapId = mapId;
 		mPlayers = new HashMap<Integer, PlayerHolder>();
 	}
 		
@@ -27,7 +29,7 @@ public class GameSnapshot implements Serializable, Gsonable {
 	}
 	
 	public GameSnapshot next() {
-		GameSnapshot newState = new GameSnapshot();
+		GameSnapshot newState = new GameSnapshot(mMapId);
 		
 		for (Entry<Integer, PlayerHolder> entry : mPlayers.entrySet())
 			newState.getPlayers().put(Integer.valueOf(entry.getKey()), new PlayerHolder(entry.getValue()));
@@ -77,12 +79,45 @@ public class GameSnapshot implements Serializable, Gsonable {
 		return null;
 	}
 	
+	public void update(GameSnapshot updateState) {
+		int key;
+		PlayerHolder player;
+		for (Entry<Integer, PlayerHolder> entry : updateState.getPlayers().entrySet()) {
+			key = entry.getKey();
+			player = entry.getValue();
+			
+			if(player != null) {
+				player.setId(key);
+				
+				if(mPlayers.containsKey(key))
+					//Player exists, update
+					mPlayers.get(key).update(player);
+				else {
+					//New Player
+					Print.log(player.getName() + " has joined!");
+					mPlayers.put(key, player);
+				}
+			}
+			else {
+				//Player has left
+				Print.log(mPlayers.get(key).getName() + " has left!");
+				mPlayers.put(key, null);
+			}
+		}
+	}
+	
 	public void update(GameSnapshot updateState, GameMain game) {
 		int key;
 		PlayerHolder player;
 		for (Entry<Integer, PlayerHolder> entry : updateState.getPlayers().entrySet()) {
 			key = entry.getKey();
 			player = entry.getValue();
+			
+			if(key == game.getUserPlayerHolder().getId()) {
+				if(player != null)
+					game.updateUserPlayerHolder(player);
+				continue;
+			}
 			
 			if(player != null) {
 				player.setId(key);
@@ -109,7 +144,6 @@ public class GameSnapshot implements Serializable, Gsonable {
 	}
 	
 	public void removePlayer(int id) {
-//		Print.log(mPlayers.get(id).getName() + " has left!");
 		mPlayers.remove(id);
 	}
 

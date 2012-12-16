@@ -59,6 +59,16 @@ public class Vector2i implements Comparable<Vector2i>, Serializable, Gsonable {
 		return x + ", " + y;
 	}
 	
+	/**
+	 * This method is used to reassign the x & y values using a different vector, but keeps it as the same object.
+	 * 
+	 * @param vector
+	 */
+	public void reassign(Vector2i vector) {
+		x = vector.x;
+		y = vector.y;
+	}
+	
 	public boolean touching(Vector2i vector) {
 		if(this.equals(vector))
 			return false; //TODO trial
@@ -93,9 +103,6 @@ public class Vector2i implements Comparable<Vector2i>, Serializable, Gsonable {
 
 	@Override
 	public JsonObject getGson(boolean... bools) {
-//		return "{\"x\":"+x+",\"y\":"+y+"}";
-//		return new Gson().toJson(this);
-//		return (JsonObject) new Gson().toJsonTree(this);
 		JsonObject jo = new JsonObject();
 		jo.addProperty("x", x);
 		jo.addProperty("y", y);

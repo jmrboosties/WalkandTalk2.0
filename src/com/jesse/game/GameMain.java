@@ -13,8 +13,8 @@ import org.newdawn.slick.SlickException;
 import org.newdawn.slick.state.StateBasedGame;
 
 import com.jesse.game.data.GameSnapshot;
-import com.jesse.game.data.JoinCommand;
 import com.jesse.game.data.PlayerHolder;
+import com.jesse.game.data.commands.JoinCommand;
 import com.jesse.game.listeners.ConnectionStatusListener;
 import com.jesse.game.listeners.OnUpdateReceivedListener;
 import com.jesse.game.net.ServerReceiver;
@@ -34,7 +34,7 @@ public class GameMain extends StateBasedGame implements ConnectionStatusListener
 	private HashMap<PlayerHolder, String> mMessageQueue = new HashMap<PlayerHolder, String>();
 	
 	private PlayerHolder mThisPlayer;
- 	
+	
 	public PrintWriter outWriter;
 	private ServerReceiver mReceiver;
 	
@@ -82,11 +82,13 @@ public class GameMain extends StateBasedGame implements ConnectionStatusListener
 	}
 	
 	public void connectToServer(String name, String ip) {
+		getContainer().getInput().clearKeyPressedRecord();
+		
 		long time = System.currentTimeMillis();
 //		enterState(Constants.LOADING_STATE_ID);
 		
-		mGameSnapshot = new GameSnapshot();
-		mThisPlayer = new PlayerHolder(new Random().nextInt(1000), new Vector2i(17, 16), name);
+		mGameSnapshot = new GameSnapshot(Constants.FIELD);
+		mThisPlayer = new PlayerHolder(new Random().nextInt(1000), new Vector2i(17, 16), name, Constants.FIELD);
 		mGameSnapshot.addPlayer(mThisPlayer);
 		
 		Socket socket = null;
@@ -132,9 +134,9 @@ public class GameMain extends StateBasedGame implements ConnectionStatusListener
 		return mNextSnapshot;
 	}
 	
-	public void setGameSnapshot(GameSnapshot snapshot) {
-		mGameSnapshot = snapshot;
-	}
+//	public void setGameSnapshot(GameSnapshot snapshot) {
+//		mGameSnapshot = snapshot;
+//	}
 	
 	public GameSnapshot getGameSnapshot() {
 		return mGameSnapshot;
@@ -166,6 +168,10 @@ public class GameMain extends StateBasedGame implements ConnectionStatusListener
 	
 	public PlayerHolder getUserPlayerHolder() {
 		return mThisPlayer;
+	}
+	
+	public void updateUserPlayerHolder(PlayerHolder holder) {
+		mThisPlayer.update(holder);
 	}
 	
 	public void showLoadingScreen() {

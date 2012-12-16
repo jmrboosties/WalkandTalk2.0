@@ -8,16 +8,16 @@ import com.jesse.game.objects.Vector2i;
 
 public class PeerPlayer extends Player {
 
-	public PeerPlayer(String name, int id) throws SlickException {
-		super(name, id);
-	}
+//	public PeerPlayer(String name, int id) throws SlickException {
+//		super(name, id);
+//	}
 	
-	public PeerPlayer(String name, Vector2i coords, int id) throws SlickException {
-		super(name, coords, id);
-	}
+//	public PeerPlayer(String name, Vector2i coords, int id) throws SlickException {
+//		super(name, coords, id);
+//	}
 	
 	public PeerPlayer(PlayerHolder holder) throws SlickException {
-		super(holder.getName(), holder.coordinates, holder.getId());
+		super(holder);
 		mSpriteSheet = new SpriteSheet("res/spritesheets/hikersheet.png", CharacterWidth, CharacterHeight);
 	}
 	

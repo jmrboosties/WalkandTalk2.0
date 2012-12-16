@@ -11,10 +11,11 @@ import java.util.Timer;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonParser;
-import com.jesse.game.data.Command;
 import com.jesse.game.data.GameSnapshot;
-import com.jesse.game.data.LeaveCommand;
 import com.jesse.game.data.PlayerHolder;
+import com.jesse.game.data.commands.Command;
+import com.jesse.game.data.commands.LeaveCommand;
+import com.jesse.game.utils.Constants;
 import com.jesse.game.utils.Print;
 
 public class Server {
@@ -22,7 +23,8 @@ public class Server {
 	public Gson gson;
 	public JsonParser parser;
 	
-	private GameSnapshot mGameState;
+//	private GameSnapshot mGameState;
+	private HashMap<Integer, GameSnapshot> mSnapshots;
 	private HashMap<Integer, String> mMessageQueue;
 	private ArrayList<Command> mCommandList;
 	private ArrayList<Socket> mClientSockets;
@@ -33,7 +35,9 @@ public class Server {
 	public boolean debugMode = false;
 	
 	public Server() {
-		mGameState = new GameSnapshot();
+//		mGameState = new GameSnapshot();
+		mSnapshots = new HashMap<Integer, GameSnapshot>();
+		loadMaps();
 		mCommandList = new ArrayList<Command>();
 		mClientSockets = new ArrayList<Socket>();
 		mNewClientSockets = new ArrayList<Socket>();
@@ -44,6 +48,11 @@ public class Server {
 		
 		parser = new JsonParser();
 		gson = new Gson();
+	}
+	
+	private void loadMaps() {
+		for (Integer mapId : Constants.MAPS.keySet())
+			mSnapshots.put(mapId, new GameSnapshot(mapId));
 	}
 
 	public void start() throws IOException {
@@ -61,12 +70,15 @@ public class Server {
 		socket.close();
 	}
 	
-	public GameSnapshot getState() {
-		return mGameState;
+	public GameSnapshot getState(int mapId) {
+//		return mGameState;
+		return mSnapshots.get(mapId);
 	}
 	
-	public void setState(GameSnapshot state) {
-		mGameState = state;
+	public void setState(GameSnapshot state, int mapId) {
+//		mGameState = state;
+//		mGameState.update(state);
+		mSnapshots.get(mapId).update(state);
 	}
 	
 	public void addCommand(Command command) {
@@ -94,9 +106,9 @@ public class Server {
 	}
 	
 	public void dumpNewClientsIntoRegular() {
-		for (Socket socket : mNewClientSockets) {
+		for (Socket socket : mNewClientSockets)
 			mClientSockets.add(socket);
-		}
+			
 		mNewClientSockets.clear();
 	}
 	
@@ -120,10 +132,14 @@ public class Server {
 		return mNewPlayers;
 	}
 	
-	public void transferPlayer(PlayerHolder holder) {
+	public void transferPlayerFromNew(PlayerHolder holder) {
 		Socket socket = mNewPlayers.get(holder.getId());
 		mPlayerMap.put(socket, holder);
 		mNewPlayers.remove(holder.getId());
+	}
+	
+	public void flagPlayerSocketAsNewToArea(PlayerHolder holder) {
+		
 	}
 	
 	public void dropPlayer(Socket socket) {
@@ -142,6 +158,16 @@ public class Server {
 	
 	public void clearLeavingPlayers() {
 		mPlayersLeaving.clear();
+	}
+	
+	public HashMap<Integer, GameSnapshot> getSnapshots() {
+		return mSnapshots;
+	}
+	
+	public void warpPlayer(PlayerHolder player, int mapId) {
+		GameSnapshot snapshot = mSnapshots.get(mapId);
+		snapshot.removePlayer(player.getId()); //TODO uhhh
+		mSnapshots.get(player.getMapId()).addPlayer(player);
 	}
 	
 	private class InputHandler implements Runnable {
@@ -166,9 +192,9 @@ public class Server {
 			else if(entry.equals("c")) {
 				Print.log(mPlayerMap.toString());
 			}
-			else if(entry.equals("v")) {
-				Print.log(mGameState.getPlayers().toString());
-			}
+			else if(entry.equals("v"))
+				for (GameSnapshot snapshot : mSnapshots.values())
+					Print.log(snapshot.getPlayers().toString());
 		}
 		
 	}

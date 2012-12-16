@@ -1,6 +1,8 @@
-package com.jesse.game.data;
+package com.jesse.game.data.commands;
 
 import com.google.gson.JsonObject;
+import com.jesse.game.data.PlayerHolder;
+import com.jesse.game.utils.Constants;
 import com.jesse.game.utils.Constants.Direction;
 import com.jesse.game.utils.Constants.State;
 
@@ -11,21 +13,18 @@ public class MoveCommand extends Command {
 	private Direction mDirection;
 	private State mState;
 	
-	public MoveCommand(int playerId) {
-		this(null, null, playerId);
-	}
+//	public MoveCommand(int playerId) {
+//		this(null, null, playerId);
+//	}
 	
-	public MoveCommand(Direction direction, State state, int playerId) {
+	public MoveCommand(Direction direction, State state, int playerId, int mapId) {
+		super(playerId, COMMAND_MOVE, mapId);
 		mDirection = direction;
 		mState = state;
-		mPlayerId = playerId;
-		mCommandType = COMMAND_MOVE;
 	}
 	
 	@Override
 	public void execute(PlayerHolder player) {
-		//TODO no collision check yet
-		
 		switch(mDirection) {
 		case DOWN :
 			player.coordinates.y++;
@@ -46,7 +45,7 @@ public class MoveCommand extends Command {
 
 	@Override
 	public String toString() {
-		return "Player " + mPlayerId + " wants to " + mState + " to the " + mDirection;
+		return "Player " + mPlayerId + " wants to " + mState + " to the " + mDirection + " on map " + Constants.MAPS.get(mMapId);
 	}
 
 	@Override
@@ -57,6 +56,7 @@ public class MoveCommand extends Command {
 		commandJson.addProperty("mState", mState.toString());
 		jObj.addProperty("command_type", 1);
 		jObj.addProperty("mPlayerId", mPlayerId);
+		jObj.addProperty("mMapId", mMapId);
 		jObj.add("command", commandJson);
 		return jObj;
 	}	

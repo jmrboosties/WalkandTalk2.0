@@ -6,7 +6,8 @@ import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.SpriteSheet;
 
-import com.jesse.game.data.MoveCommand;
+import com.jesse.game.data.PlayerHolder;
+import com.jesse.game.data.commands.MoveCommand;
 import com.jesse.game.objects.Vector2i;
 import com.jesse.game.utils.Constants.Direction;
 import com.jesse.game.utils.Constants.State;
@@ -17,32 +18,32 @@ public class UserPlayer extends Player {
 //		this(null, null, -1);
 //	}
 	
-	public UserPlayer(String name, int id) throws SlickException {
-		super(name, id);
-	}
+//	public UserPlayer(String name, int id) throws SlickException {
+//		super(name, id);
+//	}
 	
-	public UserPlayer(String name, Vector2i coords, int id) throws SlickException {
-		super(name, coords, id);
+	public UserPlayer(PlayerHolder holder) throws SlickException {
+		super(holder);
 		mSpriteSheet = new SpriteSheet("res/spritesheets/karatemansheet.png", CharacterWidth, CharacterHeight);
 	}
 
-	public MoveCommand update(Input input, int delta, Set<Vector2i> layer) {
+	public MoveCommand update(Input input, int delta, Set<Vector2i> layer, int mapId) {
 		MoveCommand command = null;
 		if(input.isKeyDown(Input.KEY_W))
-			command = startMovement(Direction.UP, input.isKeyDown(Input.KEY_LSHIFT), layer);
+			command = startMovement(Direction.UP, input.isKeyDown(Input.KEY_LSHIFT), layer, mapId);
 		else if(input.isKeyDown(Input.KEY_S))
-			command = startMovement(Direction.DOWN, input.isKeyDown(Input.KEY_LSHIFT), layer);
+			command = startMovement(Direction.DOWN, input.isKeyDown(Input.KEY_LSHIFT), layer, mapId);
 		else if(input.isKeyDown(Input.KEY_A))
-			command = startMovement(Direction.LEFT, input.isKeyDown(Input.KEY_LSHIFT), layer);
+			command = startMovement(Direction.LEFT, input.isKeyDown(Input.KEY_LSHIFT), layer, mapId);
 		else if(input.isKeyDown(Input.KEY_D))
-			command = startMovement(Direction.RIGHT, input.isKeyDown(Input.KEY_LSHIFT), layer);	
+			command = startMovement(Direction.RIGHT, input.isKeyDown(Input.KEY_LSHIFT), layer, mapId);	
 		
 		updateDraw(delta);
 		
 		return command;
 	}
 	
-	protected MoveCommand startMovement(Direction direction, boolean running, Set<Vector2i> tiles) {
+	protected MoveCommand startMovement(Direction direction, boolean running, Set<Vector2i> tiles, int mapId) {
 		if(mMoveProgress >= 0)
 			return null;
 				
@@ -60,7 +61,7 @@ public class UserPlayer extends Player {
 		coordinates = new Vector2i(newPos);		
 		mMoveProgress = 0;
 		
-		return new MoveCommand(direction, mState, mId);
+		return new MoveCommand(direction, mState, mId, mapId);
 	}
 	
 	private Vector2i collisionCheck(Direction direction, Set<Vector2i> tiles) {

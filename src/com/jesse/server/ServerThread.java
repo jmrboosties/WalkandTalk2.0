@@ -10,10 +10,10 @@ import java.net.SocketException;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.jesse.game.data.Command;
-import com.jesse.game.data.JoinCommand;
-import com.jesse.game.data.MessageCommand;
-import com.jesse.game.data.MoveCommand;
+import com.jesse.game.data.commands.Command;
+import com.jesse.game.data.commands.JoinCommand;
+import com.jesse.game.data.commands.MessageCommand;
+import com.jesse.game.data.commands.MoveCommand;
 import com.jesse.game.utils.Print;
 
 public class ServerThread extends Thread {
@@ -43,6 +43,7 @@ public class ServerThread extends Thread {
 			JsonObject commandJson;
 			while((commandJsonString = in.readLine()) != null) {
 				json = (JsonObject) parser.parse(commandJsonString);
+				Print.log(json.toString());
 				commandJson = json.getAsJsonObject("command");
 				
 				type = json.getAsJsonPrimitive("command_type").getAsInt();
@@ -50,7 +51,8 @@ public class ServerThread extends Thread {
 				switch(type) {
 				case Command.COMMAND_JOIN :
 					command = gson.fromJson(commandJson, JoinCommand.class);
-					Print.log("socket: " + mSocket.toString());
+					Print.log("json: " + commandJson.toString());
+					Print.log("command map id in thread: " + command.getMapId());
 					mServer.addToNewPlayerMap(json.getAsJsonPrimitive("mPlayerId").getAsInt(), mSocket);
 					break;
 				case Command.COMMAND_MOVE :
@@ -63,6 +65,7 @@ public class ServerThread extends Thread {
 				
 				command.setCommandType(type);
 				command.setPlayerId(json.getAsJsonPrimitive("mPlayerId").getAsInt());
+				command.setMapId(json.getAsJsonPrimitive("mMapId").getAsInt());
 				
 				if(command != null)
 					mServer.addCommand(command);

@@ -78,6 +78,8 @@ public class ServerReceiver implements Runnable {
 				mGame.loadMessageQueue(messageMap);
 			}
 							
+//			GameSnapshot snapshot = mGson.fromJson(jObject.getAsJsonObject("snapshot"), GameSnapshot.class);
+			
 			mGame.setUpdateSnapshot(mGson.fromJson(jObject.getAsJsonObject("snapshot"), GameSnapshot.class));
 		}
 		notifyAll();
