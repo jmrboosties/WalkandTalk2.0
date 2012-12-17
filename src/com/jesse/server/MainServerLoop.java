@@ -78,6 +78,10 @@ public class MainServerLoop extends TimerTask {
 		
 		mServer.clearCommandQueue();
 		
+		//TODO: first send all new data to existing clients
+		//Then, send full data packet to new clients
+		//Separate the warped and joined clients, in packet header
+		
 		if(commandsRun)
 			try {
 				for (Entry<Integer, GameSnapshot> entry : currentStates.entrySet()) {
@@ -143,9 +147,10 @@ public class MainServerLoop extends TimerTask {
 			jContainer.add("snapshot", mServer.parser.parse(json));
 		}
 		
-		Print.log("sending to clients of + " + Constants.MAPS.get(mapId) + ": " + jContainer.toString());
+		Print.log("sending to clients of " + Constants.MAPS.get(mapId) + ": " + jContainer.toString());
 		
 		for (Socket socket : mServer.getClientSockets()) {
+			Print.log("who else is gay");
 			out = new PrintWriter(socket.getOutputStream(), true);
 			out.println(jContainer.toString());
 		}

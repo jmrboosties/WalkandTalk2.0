@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Timer;
 
+import com.google.common.collect.HashBiMap;
 import com.google.gson.Gson;
 import com.google.gson.JsonParser;
 import com.jesse.game.data.GameSnapshot;
@@ -29,7 +30,8 @@ public class Server {
 	private ArrayList<Command> mCommandList;
 	private ArrayList<Socket> mClientSockets;
 	private HashMap<Integer, Socket> mNewPlayers;
-	private HashMap<Socket, PlayerHolder> mPlayerMap;
+//	private HashMap<Socket, PlayerHolder> mPlayerMap;
+	private HashBiMap<Socket, PlayerHolder> mPlayerMap;
 	private ArrayList<Socket> mNewClientSockets;
 	private ArrayList<Integer> mPlayersLeaving;
 	public boolean debugMode = false;
@@ -43,7 +45,8 @@ public class Server {
 		mNewClientSockets = new ArrayList<Socket>();
 		mMessageQueue = new HashMap<Integer, String>();
 		mNewPlayers = new HashMap<Integer, Socket>();
-		mPlayerMap = new HashMap<Socket, PlayerHolder>();
+//		mPlayerMap = new HashMap<Socket, PlayerHolder>();
+		mPlayerMap = HashBiMap.<Socket, PlayerHolder>create();
 		mPlayersLeaving = new ArrayList<Integer>();
 		
 		parser = new JsonParser();
