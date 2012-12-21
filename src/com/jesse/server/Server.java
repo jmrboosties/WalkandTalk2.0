@@ -12,10 +12,10 @@ import java.util.Timer;
 import com.google.common.collect.HashBiMap;
 import com.google.gson.Gson;
 import com.google.gson.JsonParser;
-import com.jesse.game.data.GameSnapshot;
-import com.jesse.game.data.PlayerHolder;
-import com.jesse.game.data.commands.Command;
-import com.jesse.game.data.commands.LeaveCommand;
+import com.jesse.data.GameSnapshot;
+import com.jesse.data.PlayerHolder;
+import com.jesse.data.commands.Command;
+import com.jesse.data.commands.LeaveCommand;
 import com.jesse.game.utils.Constants;
 import com.jesse.game.utils.Print;
 
@@ -24,34 +24,26 @@ public class Server {
 	public Gson gson;
 	public JsonParser parser;
 	
-//	private GameSnapshot mGameState;
 	private HashMap<Integer, GameSnapshot> mSnapshots;
-	private HashMap<Integer, String> mMessageQueue;
+//	private HashMap<Integer, String> mMessageQueue;
+	private HashMap<Integer, HashMap<Integer, String>> mMessageQueues;
 	private ArrayList<Command> mCommandList;
-//	private ArrayList<Socket> mClientSockets;
 	private HashMap<Integer, ArrayList<Socket>> mClientMap;
 	private HashMap<Integer, Socket> mNewPlayers;
-//	private HashMap<Socket, PlayerHolder> mPlayerMap;
 	private HashBiMap<Socket, PlayerHolder> mPlayerMap;
-//	private ArrayList<Socket> mNewClientSockets;
 	private HashMap<Integer, ArrayList<Socket>> mNewClientMap;
-//	private ArrayList<Integer> mPlayersLeaving;
 	private HashMap<Integer, ArrayList<Integer>> mPlayersLeavingMap;
 	public boolean debugMode = false;
 	
 	public Server() {
-//		mGameState = new GameSnapshot();
 		mSnapshots = new HashMap<Integer, GameSnapshot>();
 		mCommandList = new ArrayList<Command>();
-//		mClientSockets = new ArrayList<Socket>();
 		mClientMap = new HashMap<Integer, ArrayList<Socket>>();
-//		mNewClientSockets = new ArrayList<Socket>();
 		mNewClientMap = new HashMap<Integer, ArrayList<Socket>>();
-		mMessageQueue = new HashMap<Integer, String>();
+//		mMessageQueue = new HashMap<Integer, String>();
+		mMessageQueues = new HashMap<Integer, HashMap<Integer,String>>();
 		mNewPlayers = new HashMap<Integer, Socket>();
-//		mPlayerMap = new HashMap<Socket, PlayerHolder>();
 		mPlayerMap = HashBiMap.<Socket, PlayerHolder>create();
-//		mPlayersLeaving = new ArrayList<Integer>();
 		mPlayersLeavingMap = new HashMap<Integer, ArrayList<Integer>>();
 		
 		initMapExtras();
@@ -66,7 +58,10 @@ public class Server {
 			mClientMap.put(mapId, new ArrayList<Socket>());
 			mNewClientMap.put(mapId, new ArrayList<Socket>());
 			mPlayersLeavingMap.put(mapId, new ArrayList<Integer>());
+			mMessageQueues.put(mapId, new HashMap<Integer, String>());
 		}
+		
+//		mMessageQueues.put(-1, value)
 	}
 
 	public void start() throws IOException {
@@ -85,13 +80,10 @@ public class Server {
 	}
 	
 	public GameSnapshot getState(int mapId) {
-//		return mGameState;
 		return mSnapshots.get(mapId);
 	}
 	
 	public void setState(GameSnapshot state, int mapId) {
-//		mGameState = state;
-//		mGameState.update(state);
 		mSnapshots.get(mapId).update(state, this);
 	}
 	
@@ -108,22 +100,14 @@ public class Server {
 	}
 	
 	public ArrayList<Socket> getClientSockets(int mapId) {
-//		return mClientSockets;
 		return mClientMap.get(mapId);
 	}
 	
-	public void clearClientSockets(int mapId) {
-		Print.log(mClientMap.size() + " IS SIZE OFCLIENT");
-		mClientMap.get(mapId).clear();
-	}
-	
 	public void addNewClientSocket(Socket socket, int mapId) {
-//		mNewClientSockets.add(socket);
 		mNewClientMap.get(mapId).add(socket);
 	}
 	
 	public ArrayList<Socket> getNewClientSockets(int mapId) {
-//		return mNewClientSockets;
 		return mNewClientMap.get(mapId);
 	}
 	
@@ -137,16 +121,17 @@ public class Server {
 		sockets.clear();
 	}
 	
-	public void addMessageToQueue(int playerId, String message) {
-		mMessageQueue.put(playerId, message);
+	public void addMessageToQueue(int mapId, int playerId, String message) {
+		mMessageQueues.get(mapId).put(playerId, message);
 	}
 	
-	public HashMap<Integer, String> getMessageQueue() {
-		return mMessageQueue;
+	public HashMap<Integer, String> getMessageQueue(int mapId) {
+		return mMessageQueues.get(mapId);
 	}
 	
-	public void clearMessageQueue() {
-		mMessageQueue.clear();
+	public void clearMessageQueue(int mapId) {
+//		mMessageQueue.clear();
+		mMessageQueues.get(mapId).clear();
 	}
 	
 	public void addToNewPlayerMap(Integer playerId, Socket socket) {
@@ -171,20 +156,18 @@ public class Server {
 		PlayerHolder player = mPlayerMap.get(socket);
 		mCommandList.add(new LeaveCommand(player));
 		mPlayerMap.remove(socket);
+		mClientMap.get(player.getMapId()).remove(socket);
 	}
 	
 	public void addLeavingPlayerId(int id, int mapId) {
-//		mPlayersLeaving.add(id);
 		mPlayersLeavingMap.get(mapId).add(id);
 	}
 	
 	public ArrayList<Integer> getLeavingPlayersFromMap(int mapId) {
-//		return mPlayersLeaving;
 		return mPlayersLeavingMap.get(mapId);
 	}
 	
 	public void clearLeavingPlayersFromMap(int mapId) {
-//		mPlayersLeaving.clear();
 		mPlayersLeavingMap.get(mapId).clear();
 	}
 	
@@ -214,21 +197,16 @@ public class Server {
 		
 		private void takeInput(BufferedReader reader) throws IOException {
 			String entry = reader.readLine().substring(0, 1);
-			if(entry.equals("x")) {
+			if(entry.equals("x"))
 				System.exit(0);
-			}
-			else if(entry.equals("c")) {
+			else if(entry.equals("c"))
 				Print.log(mPlayerMap.toString());
-			}
 			else if(entry.equals("v"))
-				for (GameSnapshot snapshot : mSnapshots.values())
-					Print.log(snapshot.getPlayers().toString());
+				Print.log(mSnapshots.toString());
 			else if(entry.equals("b"))
 				Print.log(mClientMap.toString());
 			else if(entry.equals("n"))
 				Print.log(mNewClientMap.toString());
-			else if(entry.equals("g"))
-				Print.log(mClientMap.get(1).toString());
 		}
 		
 	}

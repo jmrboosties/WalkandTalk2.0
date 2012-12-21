@@ -1,4 +1,4 @@
-package com.jesse.game.utils;
+package com.jesse.utils;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -17,8 +17,6 @@ public class Constants {
 	public enum State {
 		IDLE, RUN, WALK
 	}
-	
-	public static final int GLOBAL = -1;
 	
 	public static final int MAIN = 0;
 	public static final int FIELD = 1;

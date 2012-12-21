@@ -1,4 +1,4 @@
-package com.jesse.game.data;
+package com.jesse.data;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -7,13 +7,11 @@ import java.util.Set;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-import com.google.gson.JsonObject;
 import com.jesse.game.GameMain;
-import com.jesse.game.utils.Gsonable;
 import com.jesse.game.utils.Print;
 import com.jesse.server.Server;
 
-public class GameSnapshot implements Serializable, Gsonable {
+public class GameSnapshot implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	
@@ -75,16 +73,7 @@ public class GameSnapshot implements Serializable, Gsonable {
 			.toHashCode();
 	}
 
-	@Override
-	public JsonObject getGson(boolean...bs) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	
 	public void update(GameSnapshot updateState, Server server) {
-//		ArrayList<Integer> leavingPlayers = new ArrayList<Integer>();
-		
-		Print.log("testo gaydo");
 		int key;
 		PlayerHolder player;
 		for (Entry<Integer, PlayerHolder> entry : updateState.getPlayers().entrySet()) {
@@ -105,10 +94,8 @@ public class GameSnapshot implements Serializable, Gsonable {
 			}
 			else {
 				//Player has left
-				Print.log(mPlayers.get(key).getName() + " has left! my nigga");
-//				mPlayers.put(key, null);
+				Print.log(mPlayers.get(key).getName() + " has left!");
 				mPlayers.remove(key);
-				server.clearClientSockets(key);
 			}
 		}
 	}
@@ -136,7 +123,6 @@ public class GameSnapshot implements Serializable, Gsonable {
 					//New friend
 					Print.log(player.getName() + " has joined!");
 					mPlayers.put(key, player);
-//					game.addSystemMessageToQueue(player.getName() + " has joined!");
 				}
 			}
 			else {

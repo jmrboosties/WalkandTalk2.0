@@ -4,7 +4,7 @@ import org.newdawn.slick.SlickException;
 import org.newdawn.slick.SpriteSheet;
 import org.newdawn.slick.geom.Vector2f;
 
-import com.jesse.game.data.PlayerHolder;
+import com.jesse.data.PlayerHolder;
 import com.jesse.game.objects.Vector2i;
 import com.jesse.game.utils.Constants.Direction;
 import com.jesse.game.utils.Constants.State;

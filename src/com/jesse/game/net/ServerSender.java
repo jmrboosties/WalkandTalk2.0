@@ -3,7 +3,7 @@ package com.jesse.game.net;
 import java.io.PrintWriter;
 
 import com.google.gson.JsonObject;
-import com.jesse.game.data.commands.Command;
+import com.jesse.data.commands.Command;
 
 public class ServerSender implements Runnable{
 	

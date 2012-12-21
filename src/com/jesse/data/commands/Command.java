@@ -1,8 +1,8 @@
-package com.jesse.game.data.commands;
+package com.jesse.data.commands;
 
 import java.io.Serializable;
 
-import com.jesse.game.data.PlayerHolder;
+import com.jesse.data.PlayerHolder;
 import com.jesse.game.utils.Gsonable;
 
 public abstract class Command implements Serializable, Gsonable {

@@ -1,4 +1,4 @@
-package com.jesse.game.data;
+package com.jesse.data;
 
 import java.io.Serializable;
 

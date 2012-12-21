@@ -3,7 +3,7 @@ package com.jesse.game.drawables;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.SpriteSheet;
 
-import com.jesse.game.data.PlayerHolder;
+import com.jesse.data.PlayerHolder;
 import com.jesse.game.objects.Vector2i;
 
 public class PeerPlayer extends Player {

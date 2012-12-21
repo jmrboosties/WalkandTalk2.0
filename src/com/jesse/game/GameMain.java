@@ -12,9 +12,9 @@ import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.state.StateBasedGame;
 
-import com.jesse.game.data.GameSnapshot;
-import com.jesse.game.data.PlayerHolder;
-import com.jesse.game.data.commands.JoinCommand;
+import com.jesse.data.GameSnapshot;
+import com.jesse.data.PlayerHolder;
+import com.jesse.data.commands.JoinCommand;
 import com.jesse.game.listeners.ConnectionStatusListener;
 import com.jesse.game.listeners.OnUpdateReceivedListener;
 import com.jesse.game.net.ServerReceiver;
@@ -23,7 +23,6 @@ import com.jesse.game.states.GameplayState;
 import com.jesse.game.states.LoadingScreen;
 import com.jesse.game.states.SplashPage;
 import com.jesse.game.utils.Constants;
-import com.jesse.game.utils.Print;
 
 public class GameMain extends StateBasedGame implements ConnectionStatusListener {
 
@@ -86,10 +85,10 @@ public class GameMain extends StateBasedGame implements ConnectionStatusListener
 		getContainer().getInput().clearKeyPressedRecord();
 		
 		long time = System.currentTimeMillis();
-//		enterState(Constants.LOADING_STATE_ID);
 		
-		mGameSnapshot = new GameSnapshot(Constants.FIELD);
 		mThisPlayer = new PlayerHolder(new Random().nextInt(1000), new Vector2i(17, 16), name, Constants.FIELD);
+		
+		mGameSnapshot = new GameSnapshot(mThisPlayer.getMapId());
 		mGameSnapshot.addPlayer(mThisPlayer);
 		
 		Socket socket = null;
@@ -134,10 +133,6 @@ public class GameMain extends StateBasedGame implements ConnectionStatusListener
 	public GameSnapshot getUpdateSnapshot() {
 		return mNextSnapshot;
 	}
-	
-//	public void setGameSnapshot(GameSnapshot snapshot) {
-//		mGameSnapshot = snapshot;
-//	}
 	
 	public GameSnapshot getGameSnapshot() {
 		return mGameSnapshot;

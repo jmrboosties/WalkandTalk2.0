@@ -17,11 +17,11 @@ import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
 import org.newdawn.slick.tiled.Layer;
 
+import com.jesse.data.GameSnapshot;
+import com.jesse.data.PlayerHolder;
+import com.jesse.data.commands.MessageCommand;
+import com.jesse.data.commands.MoveCommand;
 import com.jesse.game.GameMain;
-import com.jesse.game.data.GameSnapshot;
-import com.jesse.game.data.PlayerHolder;
-import com.jesse.game.data.commands.MessageCommand;
-import com.jesse.game.data.commands.MoveCommand;
 import com.jesse.game.drawables.PeerPlayer;
 import com.jesse.game.drawables.UserPlayer;
 import com.jesse.game.listeners.OnUpdateReceivedListener;
@@ -113,7 +113,6 @@ public class GameplayState extends BasicGameState implements OnUpdateReceivedLis
 		String textMsg = mChatBox.getTextForMessage();
 		if(textMsg != null && textMsg.length() > 0) {
 			MessageCommand msgCommand = new MessageCommand(mUserPlayer.getId(), textMsg, mGame.getUserPlayerHolder().getMapId());
-			Print.log("sending command: " + msgCommand.toString());
 			new Thread(new ServerSender(mGame.outWriter, msgCommand, mUserPlayer.getId())).start();
 		}
 	}

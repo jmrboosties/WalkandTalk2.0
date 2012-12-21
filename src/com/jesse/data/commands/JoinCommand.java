@@ -1,7 +1,7 @@
-package com.jesse.game.data.commands;
+package com.jesse.data.commands;
 
 import com.google.gson.JsonObject;
-import com.jesse.game.data.PlayerHolder;
+import com.jesse.data.PlayerHolder;
 import com.jesse.game.utils.Constants;
 
 public class JoinCommand extends Command {

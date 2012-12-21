@@ -8,8 +8,8 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
+import com.jesse.data.GameSnapshot;
 import com.jesse.game.GameMain;
-import com.jesse.game.data.GameSnapshot;
 import com.jesse.game.listeners.ConnectionStatusListener;
 import com.jesse.game.utils.Print;
 

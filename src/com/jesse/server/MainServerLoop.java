@@ -8,10 +8,10 @@ import java.util.Map.Entry;
 import java.util.TimerTask;
 
 import com.google.gson.JsonObject;
-import com.jesse.game.data.GameSnapshot;
-import com.jesse.game.data.PlayerHolder;
-import com.jesse.game.data.commands.Command;
-import com.jesse.game.data.commands.MessageCommand;
+import com.jesse.data.GameSnapshot;
+import com.jesse.data.PlayerHolder;
+import com.jesse.data.commands.Command;
+import com.jesse.data.commands.MessageCommand;
 import com.jesse.game.utils.Constants;
 import com.jesse.game.utils.Constants.State;
 import com.jesse.game.utils.Print;
@@ -20,17 +20,16 @@ public class MainServerLoop extends TimerTask {
 	
 	private Server mServer;
 	private long mLoopCount = 0;
+	private boolean[] mCommandsRun;
 	
 	public MainServerLoop(Server server) {
 		mServer = server;
+		mCommandsRun = new boolean[Constants.MAPS.size()];
 	}
 	
 	@Override
 	public void run() {
 		mLoopCount++;
-		
-//		GameSnapshot currentState = mServer.getState();
-//		GameSnapshot newState = currentState.next();
 		
 		HashMap<Integer, GameSnapshot> currentStates = mServer.getSnapshots();
 		HashMap<Integer, GameSnapshot> newStates = new HashMap<Integer, GameSnapshot>();
@@ -38,7 +37,9 @@ public class MainServerLoop extends TimerTask {
 		for (Entry<Integer, GameSnapshot> entry : currentStates.entrySet())
 			newStates.put(entry.getKey(), entry.getValue().next());
 		
-		boolean commandsRun = false;
+		for (int i = 0; i < mCommandsRun.length; i++)
+			mCommandsRun[i] = false;
+			
 		PlayerHolder holder = null;
 		for (Command command : mServer.getCommandQueue()) {
 			Print.log(command.toString());
@@ -53,14 +54,12 @@ public class MainServerLoop extends TimerTask {
 				break;
 			case Command.COMMAND_MESSAGE :
 				MessageCommand msgCommand = (MessageCommand)command;
-				mServer.addMessageToQueue(msgCommand.getPlayerId(), msgCommand.getMessage());
+				mServer.addMessageToQueue(msgCommand.getMapId(), msgCommand.getPlayerId(), msgCommand.getMessage());
 				holder = null;
 				break;
 			case Command.COMMAND_LEAVE :
-//				newStates.get(command.getMapId()).getPlayers().remove(command.getPlayerId());
 				newStates.get(command.getMapId()).getPlayers().put(command.getPlayerId(), null);
 				mServer.addLeavingPlayerId(command.getPlayerId(), command.getMapId());
-				Print.log("new state player size: " + newStates.get(command.getMapId()).getPlayers().size());
 				holder = null;
 				break;
 			}
@@ -75,7 +74,7 @@ public class MainServerLoop extends TimerTask {
 				
 			}
 			
-			commandsRun = true;
+			mCommandsRun[command.getMapId()] = true;
 		}
 		
 		mServer.clearCommandQueue();
@@ -84,17 +83,18 @@ public class MainServerLoop extends TimerTask {
 		//Then, send full data packet to new clients
 		//Separate the warped and joined clients, in packet header
 		
-		if(commandsRun)
-			try {
-				for (Entry<Integer, GameSnapshot> entry : currentStates.entrySet()) {
+		try {
+			for (Entry<Integer, GameSnapshot> entry : currentStates.entrySet()) {
+				if(mCommandsRun[entry.getKey()]) {
 					publishStateToClients(entry.getKey(), newStates.get(entry.getKey()), entry.getValue());
 					sendToNewClients(entry.getKey(), newStates.get(entry.getKey()));
 					mServer.setState(newStates.get(entry.getKey()), entry.getKey());
 				}
-			} catch(Exception e) {
-				e.printStackTrace();
 			}
-			
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		
 		if(mServer.debugMode)
 			Print.log("Loop: " + mLoopCount);
 	}
@@ -142,8 +142,8 @@ public class MainServerLoop extends TimerTask {
 		JsonObject jContainer = new JsonObject();
 		
 		//To already joined clients
-		jContainer.add("messages", mServer.gson.toJsonTree(mServer.getMessageQueue(), HashMap.class));
-		mServer.clearMessageQueue();
+		jContainer.add("messages", mServer.gson.toJsonTree(mServer.getMessageQueue(mapId), HashMap.class));
+		mServer.clearMessageQueue(mapId);
 		
 		if(stateJson != null) {
 			String json = stateJson.toString();
