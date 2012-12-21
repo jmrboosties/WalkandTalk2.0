@@ -57,8 +57,10 @@ public class MainServerLoop extends TimerTask {
 				holder = null;
 				break;
 			case Command.COMMAND_LEAVE :
-				newStates.get(command.getMapId()).getPlayers().remove(command.getPlayerId());
-				mServer.addLeavingPlayerId(command.getPlayerId());
+//				newStates.get(command.getMapId()).getPlayers().remove(command.getPlayerId());
+				newStates.get(command.getMapId()).getPlayers().put(command.getPlayerId(), null);
+				mServer.addLeavingPlayerId(command.getPlayerId(), command.getMapId());
+				Print.log("new state player size: " + newStates.get(command.getMapId()).getPlayers().size());
 				holder = null;
 				break;
 			}
@@ -86,6 +88,7 @@ public class MainServerLoop extends TimerTask {
 			try {
 				for (Entry<Integer, GameSnapshot> entry : currentStates.entrySet()) {
 					publishStateToClients(entry.getKey(), newStates.get(entry.getKey()), entry.getValue());
+					sendToNewClients(entry.getKey(), newStates.get(entry.getKey()));
 					mServer.setState(newStates.get(entry.getKey()), entry.getKey());
 				}
 			} catch(Exception e) {
@@ -111,26 +114,26 @@ public class MainServerLoop extends TimerTask {
 				key = entry.getKey();
 				player = entry.getValue();
 				
-				if(!oldState.getPlayers().containsKey(key)) {
-					jObj = player.getGson();
-				}
-				else if(!player.equals(oldState.getPlayers().get(key))) {
-					if(!player.coordinates.equals(oldState.getPlayers().get(key).coordinates)) {
-						jObj = player.getGson(true, false, true, false, true);
-					}
+				if(player != null) {
+					if(!oldState.getPlayers().containsKey(key))
+						jObj = player.getGson();
+					else if(!player.equals(oldState.getPlayers().get(key)) && 
+						!player.coordinates.equals(oldState.getPlayers().get(key).coordinates))
+							jObj = player.getGson(true, false, true, true, true);
+
+					player.setState(State.IDLE);
 				}
 				
 				if(jObj != null)
 					playersJson.add(String.valueOf(key), jObj);
 				
 				jObj = null;
-				player.setState(State.IDLE);
 			}
 			
-			for (Integer id : mServer.getLeavingPlayers())
+			for (Integer id : mServer.getLeavingPlayersFromMap(mapId))
 				playersJson.add(String.valueOf(id), null);
 			
-			mServer.clearLeavingPlayers();
+			mServer.clearLeavingPlayersFromMap(mapId);
 			
 			stateJson.add("mPlayers", playersJson);
 		}
@@ -149,14 +152,19 @@ public class MainServerLoop extends TimerTask {
 		
 		Print.log("sending to clients of " + Constants.MAPS.get(mapId) + ": " + jContainer.toString());
 		
-		for (Socket socket : mServer.getClientSockets()) {
-			Print.log("who else is gay");
+		for (Socket socket : mServer.getClientSockets(mapId)) {
 			out = new PrintWriter(socket.getOutputStream(), true);
 			out.println(jContainer.toString());
 		}
 		
+		//FIXME old stuff used to be here
+	}
+	
+	private void sendToNewClients(int mapId, GameSnapshot newState) throws IOException {
 		//People new as of this tick
-		if(mServer.getNewClientSockets().size() > 0) {
+		if(mServer.getNewClientSockets(mapId).size() > 0) {
+			Print.log("AELRT: " + mServer.getNewClientSockets(mapId).toString());
+			
 			String newJson = mServer.gson.toJson(newState);
 			JsonObject newPlayersContainer = new JsonObject();
 			
@@ -165,14 +173,14 @@ public class MainServerLoop extends TimerTask {
 			
 			Print.log("sending to new clients of + " + Constants.MAPS.get(mapId) + ": " + newPlayersContainer.toString());
 			
-			for (Socket socket : mServer.getNewClientSockets()) {
+			PrintWriter out;
+			for (Socket socket : mServer.getNewClientSockets(mapId)) {
 				out = new PrintWriter(socket.getOutputStream(), true);
 				out.println(newPlayersContainer.toString());
 			}
 
-			mServer.dumpNewClientsIntoRegular();
+			mServer.dumpNewClientsIntoRegular(mapId);
 		}
-		
 	}
 
 }

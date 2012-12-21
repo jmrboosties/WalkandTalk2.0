@@ -11,6 +11,7 @@ import com.google.gson.JsonObject;
 import com.jesse.game.GameMain;
 import com.jesse.game.utils.Gsonable;
 import com.jesse.game.utils.Print;
+import com.jesse.server.Server;
 
 public class GameSnapshot implements Serializable, Gsonable {
 
@@ -32,7 +33,8 @@ public class GameSnapshot implements Serializable, Gsonable {
 		GameSnapshot newState = new GameSnapshot(mMapId);
 		
 		for (Entry<Integer, PlayerHolder> entry : mPlayers.entrySet())
-			newState.getPlayers().put(Integer.valueOf(entry.getKey()), new PlayerHolder(entry.getValue()));
+			if(entry.getValue() != null)
+				newState.getPlayers().put(Integer.valueOf(entry.getKey()), new PlayerHolder(entry.getValue()));
 		
 		return newState;
 	}
@@ -79,7 +81,10 @@ public class GameSnapshot implements Serializable, Gsonable {
 		return null;
 	}
 	
-	public void update(GameSnapshot updateState) {
+	public void update(GameSnapshot updateState, Server server) {
+//		ArrayList<Integer> leavingPlayers = new ArrayList<Integer>();
+		
+		Print.log("testo gaydo");
 		int key;
 		PlayerHolder player;
 		for (Entry<Integer, PlayerHolder> entry : updateState.getPlayers().entrySet()) {
@@ -100,8 +105,10 @@ public class GameSnapshot implements Serializable, Gsonable {
 			}
 			else {
 				//Player has left
-				Print.log(mPlayers.get(key).getName() + " has left!");
-				mPlayers.put(key, null);
+				Print.log(mPlayers.get(key).getName() + " has left! my nigga");
+//				mPlayers.put(key, null);
+				mPlayers.remove(key);
+				server.clearClientSockets(key);
 			}
 		}
 	}

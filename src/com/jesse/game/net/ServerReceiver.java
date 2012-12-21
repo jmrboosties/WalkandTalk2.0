@@ -61,7 +61,7 @@ public class ServerReceiver implements Runnable {
 				wait();
 			} catch(InterruptedException e) { }
 		}
-		Print.log("from server: " + serverOutput);
+		Print.log("from server: " + serverOutput); //TODO this is next!
 		if(serverOutput.startsWith("{")) {
 			JsonObject jObject = (JsonObject) mParser.parse(serverOutput);
 			if(!mJoined) {
@@ -79,6 +79,8 @@ public class ServerReceiver implements Runnable {
 			}
 							
 //			GameSnapshot snapshot = mGson.fromJson(jObject.getAsJsonObject("snapshot"), GameSnapshot.class);
+			
+//			Print.log("json object data: " + jObject.getAsJsonObject("snapshot"));
 			
 			mGame.setUpdateSnapshot(mGson.fromJson(jObject.getAsJsonObject("snapshot"), GameSnapshot.class));
 		}

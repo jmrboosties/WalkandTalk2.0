@@ -28,7 +28,7 @@ public class ServerThread extends Thread {
 		super("ServerThread");
 		mServer = server;
 		mSocket = socket;
-		mServer.addNewClientSocket(mSocket);
+//		mServer.addNewClientSocket(mSocket);
 	}
 	
 	public void run() {
@@ -52,7 +52,6 @@ public class ServerThread extends Thread {
 				case Command.COMMAND_JOIN :
 					command = gson.fromJson(commandJson, JoinCommand.class);
 					Print.log("json: " + commandJson.toString());
-					Print.log("command map id in thread: " + command.getMapId());
 					mServer.addToNewPlayerMap(json.getAsJsonPrimitive("mPlayerId").getAsInt(), mSocket);
 					break;
 				case Command.COMMAND_MOVE :
@@ -66,6 +65,9 @@ public class ServerThread extends Thread {
 				command.setCommandType(type);
 				command.setPlayerId(json.getAsJsonPrimitive("mPlayerId").getAsInt());
 				command.setMapId(json.getAsJsonPrimitive("mMapId").getAsInt());
+				
+				if(command.getCommandType() == Command.COMMAND_JOIN)
+					mServer.addNewClientSocket(mSocket, command.getMapId());	
 				
 				if(command != null)
 					mServer.addCommand(command);
